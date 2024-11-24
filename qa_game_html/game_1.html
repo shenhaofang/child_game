@@ -124,6 +124,7 @@
             font-size: 24px;
             margin-bottom: 20px;
             color: #fff;
+            text-shadow: 1px 1px 2px black;
         }
 
         /* 答案输入样式 */
@@ -403,9 +404,9 @@
             { name: "黑熊精", image: "images/level1_boss.png", image_attack: "images/level1_boss_attack.png", hp: 50, bg: "images/bg1.webp" },
             { name: "黄风大圣", image: "images/level2_boss.webp", image_attack: "images/level2_boss.webp", hp: 80, bg: "images/bg2.webp" },
             { name: "黄眉老佛", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 120, bg: "images/bg3.webp" },
-            { name: "百眼神君", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 180, bg: "images/bg3.webp" },
-            { name: "夜叉王", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 220, bg: "images/bg3.webp" },
-            { name: "大圣残躯", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 300, bg: "images/bg3.webp" },
+            { name: "百眼魔君", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 180, bg: "images/bg4.webp" },
+            { name: "夜叉王", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 220, bg: "images/bg5.webp" },
+            { name: "大圣残躯", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 300, bg: "images/bg6.webp" },
         ];
 
         // 更新关卡选择界面
@@ -429,7 +430,7 @@
         function updateBossInfo() {
             bossIndex = level - 1;
             const boss = bosses[bossIndex];
-            document.getElementById("boss-name").textContent = `Boss: ${boss.name}`;
+            document.getElementById("boss-name").textContent = boss.name;
             document.getElementById("boss-image").src = boss.image;
             document.getElementById("game-container").style.backgroundImage = `url('${boss.bg}')`;
             bossHP = boss.hp;
@@ -465,6 +466,7 @@
                 document.getElementById("options").style.display = "none";
                 document.getElementById("input-answer").style.display = "flex";
                 document.getElementById("answer-input").value = ""; // 清空输入框
+                document.getElementById("answer-input").focus();
             }
         }
 
@@ -535,11 +537,14 @@
                 level++;
                 if (level <= bosses.length) {
                     showLevelUp();
-                    playerHP = Math.min(playerHP + 20, calPlayerHP(level));
+                    player.hp = calPlayerHP(level);
+                    playerHP = Math.min(playerHP + 20, player.hp);
                     updateBossInfo();
+                    renderQuestion(); // 渲染下一题
                 } else {
                     effectToast("恭喜你通关了！", true);
                     renderLevelSelect();
+                    renderQuestion(); // 渲染下一题
                 }
             } else if (playerHP <= 0) {
                 effectToast("你输了！", false);
