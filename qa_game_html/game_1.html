@@ -317,7 +317,7 @@
         #level-select {
             display: flex;
             flex-direction: column;
-            max-height: 100vh; /* 避免超出视口 */
+            /* max-height: 100vh; 避免超出视口 */
         }
 
         /* 固定顶部的关卡选择标题 */
@@ -359,8 +359,8 @@
         </div>
         <!-- 角色 -->
         <div class="characters">
-            <img id="player-image" src="images/player_base.webp" alt="Player">
-            <img id="boss-image" src="images/level1_boss.webp" alt="Boss">
+            <img id="player-image" src="images/player.gif" alt="Player">
+            <img id="boss-image" src="images/level1_boss.png" alt="Boss">
         </div>
         <div class="question-container">
             <div class="question" id="question">这里显示问题</div>
@@ -394,18 +394,18 @@
 
         player = {
             name: "孙悟空", 
-            image: "images/player_base.webp",
-            image_attack: "",
+            image: "images/player.gif",
+            image_attack: "images/player.gif",
             hp: calPlayerHP(level),
         }
 
         const bosses = [
-            { name: "黑熊精", image: "images/level1_boss.webp", image_attack: "", hp: 50, bg: "images/bg1.webp" },
-            { name: "黄风大圣", image: "images/level2_boss.webp", image_attack: "", hp: 80, bg: "images/bg2.webp" },
-            { name: "黄眉老佛", image: "images/level3_boss.webp", image_attack: "", hp: 120, bg: "images/bg3.webp" },
-            { name: "百眼神君", image: "images/level3_boss.webp", image_attack: "", hp: 180, bg: "images/bg3.webp" },
-            { name: "夜叉王", image: "images/level3_boss.webp", image_attack: "", hp: 220, bg: "images/bg3.webp" },
-            { name: "大圣残躯", image: "images/level3_boss.webp", image_attack: "", hp: 300, bg: "images/bg3.webp" },
+            { name: "黑熊精", image: "images/level1_boss.png", image_attack: "images/level1_boss_attack.png", hp: 50, bg: "images/bg1.webp" },
+            { name: "黄风大圣", image: "images/level2_boss.webp", image_attack: "images/level2_boss.webp", hp: 80, bg: "images/bg2.webp" },
+            { name: "黄眉老佛", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 120, bg: "images/bg3.webp" },
+            { name: "百眼神君", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 180, bg: "images/bg3.webp" },
+            { name: "夜叉王", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 220, bg: "images/bg3.webp" },
+            { name: "大圣残躯", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 300, bg: "images/bg3.webp" },
         ];
 
         // 更新关卡选择界面
@@ -468,9 +468,12 @@
             }
         }
 
-        function playCharacterAnimation(characterId, animationClass) {
+        function playCharacterAnimation(characterId, animationClass, actionImg = "") {
             const character = document.getElementById(characterId);
             character.classList.add(animationClass);
+            if (actionImg != ""){
+                character.src = actionImg;
+            }
 
             // 动画结束后移除类
             character.addEventListener("animationend", () => {
@@ -510,8 +513,13 @@
             const attackClass = isPlayer ? "attack" : "boss-attack";
             const hurtClass = isPlayer ? "boss-hurt" : "hurt";
 
-            playCharacterAnimation(attackerId, attackClass); // 攻击动画
-            playCharacterAnimation(defenderId, hurtClass);  // 受伤动画
+            bossIndex = level - 1;
+            const boss = bosses[bossIndex];
+
+            const attackerImg = isPlayer ? player.attackerImg : boss.image_attack;
+
+            playCharacterAnimation(attackerId, attackClass, attackerImg); // 攻击动画
+            playCharacterAnimation(defenderId, hurtClass, "");  // 受伤动画
         }
 
         function showLevelUp() {
@@ -574,6 +582,7 @@
 
             // 重置玩家血量
             playerHP = calPlayerHP(level);
+            player.hp = playerHP
             document.getElementById("player-name").textContent = player.name;
             document.getElementById("player-image").src = player.image;
             
