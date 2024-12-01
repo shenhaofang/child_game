@@ -404,9 +404,9 @@
             { name: "黑熊精", image: "images/level1_boss.png", image_attack: "images/level1_boss_attack.png", hp: 50, bg: "images/bg1.webp" },
             { name: "黄风大圣", image: "images/level2_boss.png", image_attack: "images/level2_boss.png", hp: 80, bg: "images/bg2.webp" },
             { name: "黄眉老佛", image: "images/level3_boss.png", image_attack: "images/level3_boss.png", hp: 120, bg: "images/bg3.webp" },
-            { name: "百眼魔君", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 180, bg: "images/bg4.webp" },
-            { name: "夜叉王", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 220, bg: "images/bg5.webp" },
-            { name: "大圣残躯", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 300, bg: "images/bg6.webp" },
+            { name: "百眼魔君", image: "images/level4_boss.png", image_attack: "images/level4_boss.png", hp: 180, bg: "images/bg4.webp" },
+            { name: "夜叉王", image: "images/level5_boss.png", image_attack: "images/level5_boss_attack.png", hp: 220, bg: "images/bg5.webp" },
+            { name: "大圣残躯", image: "images/level6_boss.png", image_attack: "images/level6_boss.png", hp: 300, bg: "images/bg6.webp" },
         ];
 
         // 更新关卡选择界面
@@ -581,11 +581,12 @@
             if (!answer) {
                 answer = document.getElementById("answer-input").value.trim(); // 获取用户输入
             }
+            attackVal = (currentQuestion.difficulty+1) * 5
             if (answer.toLowerCase() === currentQuestion.answer.toLowerCase()) {
-                bossHP -= 10;
+                bossHP -= attackVal;
                 showAttackEffect(true);
             } else {
-                playerHP -= 10;
+                playerHP -= attackVal;
                 showAttackEffect(false);
             }
             updateHealthBars();
