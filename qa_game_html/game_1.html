@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黑学霸-悟空</title>
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1d1f27;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            overflow: auto;
+        }
+
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+            padding: 10px;
+            background-size: cover;
+        }
+
+        /* 血条容器 */
+        .health-bar-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        /* 血条样式 */
+        .health-bar {
+            width: 300px;
+            height: 30px;
+            position: relative;
+        }
+
+        .hp-bar {
+            width: 100%;
+            height: 100%;
+            background-color: red;
+        }
+
+        .character-name {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: white;
+            text-align: center;
+        }
+
+        /* 角色样式 */
+        .characters {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            position: relative;
+        }
+
+        .characters img {
+            position: relative;
+            width: 150px;
+            margin: 0 100px;
+        }
+
+        /* 粒子特效 */
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+            animation: particle-animation 1s ease-out forwards;
+            pointer-events: none; /* 不影响用户操作 */
+            z-index: 1000;
+        }
+
+        @keyframes particle-animation {
+            0% {
+                opacity: 1;
+                transform: scale(1) translate(0, 0);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.5) translate(calc(var(--dx, 0) * 100px), calc(var(--dy, 0) * 100px));
+            }
+        }
+
+        /* 过渡效果 */
+        #level-up {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: gold;
+            text-shadow: 2px 2px 8px black;
+            display: none;
+        }
+
+        /* 问题和回答区容器 */
+        .question-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 垂直居中 */
+            align-items: center; /* 水平居中 */
+            margin: 10px auto; /* 顶部和底部的间距 */
+            padding: 10px;
+            max-width: 80%; /* 防止太宽 */
+            text-align: center;
+        }
+
+        /* 问题样式 */
+        .question {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        /* 答案输入样式 */
+        .input-answer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* 输入框和按钮的间距 */
+        }
+
+        .input-answer input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 250px; /* 更宽一些的输入框 */
+        }
+
+        .input-answer button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .input-answer button:hover {
+            background-color: #45a049;
+        }
+
+        /* 答案选项区域 */
+        .options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* 允许多行选项 */
+            gap: 15px; /* 选项之间的间距 */
+        }
+
+        .option {
+            padding: 10px 20px;
+            background-color: #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .option:hover {
+            background-color: #bbb;
+        }
+
+        /* 角色的攻击和受伤动画 */
+        .attack-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: red;
+            font-weight: bold;
+            opacity: 1;
+            animation: attack-animation 1s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes attack-animation {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* 受伤动画 */
+        .damage-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: blue;
+            font-weight: bold;
+            opacity: 1;
+            animation: damage-animation 1s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes damage-animation {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* 攻击动作动画 */
+        @keyframes attack {
+            0% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(300px); /* 向目标方向移动 */
+            }
+            75% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* 被攻击动作动画 */
+        @keyframes hurt {
+            0% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(-100px); /* 向后移动 */
+            }
+            75% {
+                transform: translateX(100px); /* 向前弹一下 */
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* 添加动画时的样式 */
+        .attack {
+            z-index: 100;
+            animation: attack 0.5s ease-in-out;
+        }
+
+        .hurt {
+            animation: hurt 0.5s ease-in-out;
+        }
+
+        @keyframes boss-attack {
+            0% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(-300px); /* 向左移动，靠近玩家 */
+            }
+            75% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(0); /* 返回原位 */
+            }
+        }
+
+        /* 被攻击动作动画 */
+        @keyframes boss-hurt {
+            0% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(100px); /* 向后移动 */
+            }
+            75% {
+                transform: translateX(-100px); /* 向前弹一下 */
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .boss-attack {
+            animation: boss-attack 0.5s ease-in-out;
+        }
+
+        .boss-hurt {
+            animation: boss-hurt 0.5s ease-in-out;
+        }
+
+        button {
+            text-shadow: 1px 1px 2px black;
+            color: white;
+        }
+
+        /* 设置整体样式 */
+        #level-select {
+            display: flex;
+            flex-direction: column;
+            /* max-height: 100vh; 避免超出视口 */
+        }
+
+        /* 固定顶部的关卡选择标题 */
+        #level-header {
+            position: sticky; /* 或使用 fixed */
+            top: 0; /* 紧贴页面顶部 */
+            background-color: #333; /* 背景色（避免内容滚动时透明） */
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            z-index: 10; /* 确保固定区域不被覆盖 */
+        }
+
+        #level-buttons-container {
+            max-height: 80vh; /* 设置最大高度为视口的 80% */
+            flex-grow: 1; /* 占用剩余空间 */
+            overflow-y: auto; /* 超出高度时启用垂直滚动 */
+            border: 1px solid #ccc; /* 添加一个边框以区分界限 */
+            border-radius: 10px; /* 边角圆滑 */
+            padding: 10px; /* 添加适当的内边距 */
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+        }
+
+    </style>
+    <script src="questions.js"></script>
+</head>
+<body>
+    <div id="game-container" style="display: none;">
+        <!-- 血条 -->
+        <div class="health-bar-container">
+            <div class="health-bar" id="player-bar-container">
+                <div id="player-hp" class="hp-bar"></div>
+                <div class="character-name" id="player-name">Player</div>
+            </div>
+            <div class="health-bar" id="boss-bar-container">
+                <div id="boss-hp" class="hp-bar"></div>
+                <div class="character-name" id="boss-name">Boss</div>
+            </div>
+        </div>
+        <!-- 角色 -->
+        <div class="characters">
+            <img id="player-image" src="images/player.gif" alt="Player">
+            <img id="boss-image" src="images/level1_boss.png" alt="Boss">
+        </div>
+        <div class="question-container">
+            <div class="question" id="question">这里显示问题</div>
+            <!-- 选择题区域 -->
+            <div class="options" id="options" style="display: none;"></div>
+            <!-- 自由输入区域 -->
+            <div class="input-answer" id="input-answer" style="display: none;">
+                <input type="text" id="answer-input" placeholder="输入答案...">
+                <button onclick="submitAnswer()">提交</button>
+            </div>
+        </div>
+    </div>
+    <div id="level-up">获胜！</div>
+    <!-- 关卡选择界面 -->
+    <div id="level-select" style="text-align: center;">
+        <!-- <h2>选择关卡</h2> -->
+        <h2 id="level-header">选择关卡</h2>
+        <div id="level-buttons-container" style="max-height: 60vh; overflow-y: auto; border: 1px solid #ccc; border-radius: 10px; padding: 10px;"></div>
+            <div id="level-buttons" style="display: flex; justify-content: center; gap: 20px; flex-direction: column; flex-wrap: wrap;">
+                <!-- 按钮将动态生成 -->
+            </div>
+        </div>
+    </div>
+    <!-- <img src="images/bg1.webp" style="background-color: #000000;" alt="Test Transparent"> -->
+    <script>
+        // 全局变量
+        let level = 1;
+        let currentQuestion = null;
+        let playerHP = calPlayerHP(level);
+        let bossHP = 0;
+
+        player = {
+            name: "孙悟空", 
+            image: "images/player.gif",
+            image_attack: "images/player.gif",
+            hp: calPlayerHP(level),
+        }
+
+        const bosses = [
+            { name: "黑熊精", image: "images/level1_boss.png", image_attack: "images/level1_boss_attack.png", hp: 50, bg: "images/bg1.webp" },
+            { name: "黄风大圣", image: "images/level2_boss.png", image_attack: "images/level2_boss.png", hp: 80, bg: "images/bg2.webp" },
+            { name: "黄眉老佛", image: "images/level3_boss.png", image_attack: "images/level3_boss.png", hp: 120, bg: "images/bg3.webp" },
+            { name: "百眼魔君", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 180, bg: "images/bg4.webp" },
+            { name: "夜叉王", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 220, bg: "images/bg5.webp" },
+            { name: "大圣残躯", image: "images/level3_boss.webp", image_attack: "images/level3_boss.webp", hp: 300, bg: "images/bg6.webp" },
+        ];
+
+        // 更新关卡选择界面
+        function renderLevelSelect() {
+            // 切换到游戏界面
+            document.getElementById("level-select").style.display = "flex";
+            document.getElementById("game-container").style.display = "none";
+            
+            const levelButtons = document.getElementById("level-buttons");
+            levelButtons.innerHTML = bosses.map((boss, index) => `
+                <button onclick="resetGame(${index + 1})" style="padding: 50px 20px; font-size: 18px;background-image: url('${boss.bg}');">
+                    关卡 ${index + 1}: ${boss.name}
+                </button>
+            `).join("");
+        }
+
+        function calPlayerHP(level) {
+            return 50+level*10
+        }
+
+        function updateBossInfo() {
+            bossIndex = level - 1;
+            const boss = bosses[bossIndex];
+            document.getElementById("boss-name").textContent = boss.name;
+            // animation.classList.contains("active");
+            let bossImg = document.getElementById("boss-image");
+            bossImg.src = boss.image;
+            if (bossImg.classList.contains("boss-hurt")) {
+                bossImg.addEventListener('animationend', () => {
+                    bossImg.classList.remove("boss-hurt");
+                    bossImg.src = boss.image;
+                });
+            }
+
+            document.getElementById("game-container").style.backgroundImage = `url('${boss.bg}')`;
+            bossHP = boss.hp;
+            updateHealthBars();
+        }
+
+        function updateHealthBars() {
+            bossIndex = level - 1;
+            const boss = bosses[bossIndex];
+            document.getElementById("player-hp").style.width = `${(playerHP / player.hp) * 100}%`;
+            document.getElementById("boss-hp").style.width = `${(bossHP / boss.hp) * 100}%`;
+        }
+
+        // 获取题目
+        function getQuestion(level) {
+            const filteredQuestions = questions.filter(q => q.difficulty <= level);
+            return filteredQuestions[Math.floor(Math.random() * filteredQuestions.length)];
+        }
+
+        function renderQuestion() {
+            currentQuestion = getQuestion(level); // 固定当前题目
+            document.getElementById("question").innerText = currentQuestion.question;
+
+            if (currentQuestion.options.length > 0) {
+                // 显示选择题
+                document.getElementById("options").style.display = "flex";
+                document.getElementById("input-answer").style.display = "none";
+                document.getElementById("options").innerHTML = currentQuestion.options
+                    .map((option) => `<div class="option" onclick="submitAnswer('${option}')">${option}</div>`)
+                    .join("");
+            } else {
+                // 显示输入框
+                document.getElementById("options").style.display = "none";
+                document.getElementById("input-answer").style.display = "flex";
+                document.getElementById("answer-input").value = ""; // 清空输入框
+                document.getElementById("answer-input").focus();
+            }
+        }
+
+        function playCharacterAnimation(characterId, animationClass, actionImg = "") {
+            let character = document.getElementById(characterId);
+            character.classList.add(animationClass);
+            let originImg = character.src
+            if (actionImg != ""){
+                character.src = actionImg;
+            }
+
+            // 动画结束后移除类
+            character.addEventListener("animationend", () => {
+                character.classList.remove(animationClass);
+                character.src = originImg;
+            }, { once: true });
+        }
+
+        function showParticles(isPlayer) {
+            const container = isPlayer ? document.getElementById("boss-image") : document.getElementById("player-image");
+            const rect = container.getBoundingClientRect(); // 获取目标图像的位置信息
+
+            const centerX = rect.left + rect.width / 2; // 图像中心的 x 坐标
+            // const centerY = rect.top + rect.height / 2; // 图像中心的 y 坐标
+            const centerY = rect.top; // 图像中心的 y 坐标
+
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement("div");
+                particle.className = "particle";
+                particle.style.setProperty("--dx", Math.random() * 2 - 1);
+                particle.style.setProperty("--dy", Math.random() * 2 - 1);
+                // 设置粒子初始位置
+                particle.style.left = `${centerX}px`;
+                particle.style.top = `${centerY}px`;
+
+                container.parentElement.appendChild(particle);
+                setTimeout(() => container.parentElement.removeChild(particle), 1000);
+            }
+        }
+
+        function showAttackEffect(isPlayer) {
+            showParticles(isPlayer);
+
+            // 角色动作动画
+            const attackerId = isPlayer ? "player-image" : "boss-image";
+            const defenderId = isPlayer ? "boss-image" : "player-image";
+
+            const attackClass = isPlayer ? "attack" : "boss-attack";
+            const hurtClass = isPlayer ? "boss-hurt" : "hurt";
+
+            bossIndex = level - 1;
+            const boss = bosses[bossIndex];
+
+            const attackerImg = isPlayer ? player.attackerImg : boss.image_attack;
+
+            playCharacterAnimation(attackerId, attackClass, attackerImg); // 攻击动画
+            playCharacterAnimation(defenderId, hurtClass, "");  // 受伤动画
+        }
+
+        function showLevelUp() {
+            const levelUp = document.getElementById("level-up");
+            levelUp.style.display = "block";
+            setTimeout(() => (levelUp.style.display = "none"), 2000);
+        }
+
+        // 检查游戏状态
+        function checkGameStatus() {
+            if (bossHP <= 0) {
+                effectToast("你击败了 Boss！", true);
+                level++;
+                if (level <= bosses.length) {
+                    showLevelUp();
+                    player.hp = calPlayerHP(level);
+                    playerHP = Math.min(playerHP + 20, player.hp);
+                    updateBossInfo();
+                    renderQuestion(); // 渲染下一题
+                } else {
+                    effectToast("恭喜你通关了！", true);
+                    renderLevelSelect();
+                    renderQuestion(); // 渲染下一题
+                }
+            } else if (playerHP <= 0) {
+                effectToast("你输了！", false);
+                renderLevelSelect();
+            } else {
+                renderQuestion(); // 渲染下一题
+            }
+        }
+
+        function effectToast(message, isPlayer) {
+            const effect = document.createElement("div");
+            effect.className = isPlayer ? "attack-effect" : "damage-effect";
+            effect.innerText = message;
+            document.body.appendChild(effect);
+
+            // 动画结束后移除元素
+            setTimeout(() => {
+                document.body.removeChild(effect);
+            }, 1000);
+        }
+
+        function submitAnswer(answer) {
+            if (!answer) {
+                answer = document.getElementById("answer-input").value.trim(); // 获取用户输入
+            }
+            if (answer.toLowerCase() === currentQuestion.answer.toLowerCase()) {
+                bossHP -= 10;
+                showAttackEffect(true);
+            } else {
+                playerHP -= 10;
+                showAttackEffect(false);
+            }
+            updateHealthBars();
+            checkGameStatus();
+        }
+
+        function resetGame(setLevel = 1) {
+            // 重置关卡
+            level = setLevel;
+
+            // 重置玩家血量
+            playerHP = calPlayerHP(level);
+            player.hp = playerHP
+            document.getElementById("player-name").textContent = player.name;
+            document.getElementById("player-image").src = player.image;
+            
+            // 重置Boss信息
+            updateBossInfo();
+
+            // 切换到游戏界面
+            document.getElementById("level-select").style.display = "none";
+            document.getElementById("game-container").style.display = "block";
+
+            // 显示游戏开始的提示或初始化界面
+            effectToast("新游戏开始！", false);
+            renderQuestion();
+        }
+
+        // 初始化
+        resetGame(1);
+
+        // 初始化游戏时显示关卡选择
+        renderLevelSelect();
+    </script>
+</body>
+</html>
