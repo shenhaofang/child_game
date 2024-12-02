@@ -461,7 +461,7 @@
 
         function renderQuestion() {
             currentQuestion = getQuestion(level); // 固定当前题目
-            document.getElementById("question").innerText = currentQuestion.question;
+            document.getElementById("question").innerHTML = currentQuestion.question;
 
             if (currentQuestion.options.length > 0) {
                 // 显示选择题
