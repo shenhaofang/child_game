@@ -81,12 +81,6 @@ function autoMathMultiDiv(difficulty = 1, num = 10){
     }
 }
 
-autoMathQuestions(1, 10)
-autoMathQuestions(2, 10)
-autoMathQuestions(3, 10)
-autoMathQuestions(4, 10)
-autoMathQuestions(5, 10)
-
 const poetrys = [
     {
         title: "山村咏怀",
@@ -181,14 +175,26 @@ const poetrys = [
     }
 ];
 
-function poetryQuestionMaker1(poetry){
+function poetryQuestionMaker1(poetry, optionAnswer = false){
     let contentIdx = Math.floor(Math.random() * poetry.content.length);
-    return {
+    let res =  {
         question: `请写出《${poetry.title}》的第${contentIdx+1}小句`,
         options: [],
         answer: poetry.content[contentIdx],
         difficulty: poetry.difficulty+2
     }
+    if (optionAnswer){
+        let options = [...poetry.content];
+        shuffle(options);
+        options = options.slice(0, 4);
+        if (!options.includes(res.answer)){
+            options[0] = res.answer;
+            shuffle(options);
+        }
+        res.options = options;
+        res.difficulty --;
+    }
+    return res
 }
 
 function shuffle(arr) {
@@ -270,6 +276,7 @@ function poetryQuestionMaker3(poetry, options = []){
         res.options = options;
         res.difficulty;
     }
+    return res
 }
 
 function poetryQuestionMaker4(poetry, options = []){
@@ -294,6 +301,7 @@ function poetryQuestionMaker4(poetry, options = []){
         res.options = options;
         res.difficulty;
     }
+    return res
 }
 
 function autoPoetryQuestions(difficulty = 1, num = 10){
@@ -319,9 +327,17 @@ function autoPoetryQuestions(difficulty = 1, num = 10){
 
     for (let i = 0; i < selectedPoetrys.length; i++) {
         let poetry = selectedPoetrys[i];
-        questions.push(poetryQuestionMaker1(poetry))
+        questions.push(poetryQuestionMaker1(poetry, true))
         questions.push(poetryQuestionMaker2(poetry, true))
         questions.push(poetryQuestionMaker3(poetry, allTitles))
         questions.push(poetryQuestionMaker4(poetry, allAuthors))
     }
 }
+
+autoMathQuestions(1, 10)
+autoMathQuestions(2, 10)
+autoMathQuestions(3, 10)
+autoMathQuestions(4, 10)
+autoMathQuestions(5, 10)
+autoPoetryQuestions(1, 10)
+autoPoetryQuestions(2, 10)
