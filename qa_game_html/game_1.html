@@ -17,6 +17,40 @@
             overflow: auto;
         }
 
+        .summary {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .summary h2 {
+            text-align: center;
+        }
+        .wrong-questions {
+            margin-top: 20px;
+        }
+        .wrong-questions li {
+            margin-bottom: 15px;
+            list-style-type: none;
+        }
+        .wrong-questions li p {
+            margin: 5px 0;
+        }
+        .highlight {
+            color: red;
+            font-weight: bold;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .actions button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
         #game-container {
             display: flex;
             flex-direction: column;
@@ -125,6 +159,11 @@
             margin-bottom: 10px;
             color: #fff;
             text-shadow: 1px 1px 2px black;
+        }
+
+        .question img {
+            height: 80px;
+            display: block;
         }
 
         /* 答案输入样式 */
@@ -346,6 +385,18 @@
     <script src="questions.js"></script>
 </head>
 <body>
+    <div id="summary-container" class="summary">
+        <h2>闯关总结</h2>
+        <p id="attempts">累计答题次数: </p>
+        <p id="accuracy">正确率: </p>
+        <div id="wrong-section">
+            <p>以下是你做错的题目及详细反馈：</p>
+            <ul id="wrong-list"></ul>
+        </div>
+        <div class="actions">
+            <button id="return-button">返回</button>
+        </div>
+    </div>
     <div id="game-container" style="display: none;">
         <!-- 血条 -->
         <div class="health-bar-container">
@@ -393,6 +444,11 @@
         let playerHP = calPlayerHP(level);
         let bossHP = 0;
 
+        // 闯关数据统计
+        let totalAttempts = 0; // 累计答题次数
+        let correctCount = 0;  // 累计答对次数
+        let wrongQuestions = []; // 做错题目记录
+
         player = {
             name: "孙悟空", 
             image: "images/player.gif",
@@ -409,10 +465,30 @@
             { name: "大圣残躯", image: "images/level6_boss.png", image_attack: "images/level6_boss.png", hp: 300, bg: "images/bg6.webp" },
         ];
 
+        // const questions = [
+            // {
+            //     question: "2 + 2 等于几？",
+            //     img: "",
+            //     options: ["3", "4", "5"],
+            //     answer: "4",
+            //     knowledge: "",
+            //     difficulty: 1
+            // },
+            // {
+            //     question: "HTTP 的默认端口号是？",
+            //     img: "",
+            //     options: [],
+            //     answer: "80",
+            //     knowledge: "http的默认端口号是80",
+            //     difficulty: 2
+            // }
+        // ];
+
         // 更新关卡选择界面
         function renderLevelSelect() {
             // 切换到游戏界面
             document.getElementById("level-select").style.display = "flex";
+            document.getElementById("summary-container").style.display = "none";
             document.getElementById("game-container").style.display = "none";
             
             const levelButtons = document.getElementById("level-buttons");
@@ -438,7 +514,13 @@
                 bossImg.addEventListener('animationend', () => {
                     bossImg.classList.remove("boss-hurt");
                     bossImg.src = boss.image;
-                });
+                }, { once: true });
+            }
+            if (bossImg.classList.contains("boss-attack")) {
+                bossImg.addEventListener('animationend', () => {
+                    bossImg.classList.remove("boss-attack");
+                    bossImg.src = boss.image;
+                }, { once: true });
             }
 
             document.getElementById("game-container").style.backgroundImage = `url('${boss.bg}')`;
@@ -463,6 +545,10 @@
             currentQuestion = getQuestion(level); // 固定当前题目
             document.getElementById("question").innerHTML = currentQuestion.question;
 
+            if (currentQuestion.img != ""){
+                document.getElementById("question").innerHTML = `${currentQuestion.question}<img src="${currentQuestion.img}">`;
+            }
+
             if (currentQuestion.options.length > 0) {
                 // 显示选择题
                 document.getElementById("options").style.display = "flex";
@@ -473,6 +559,7 @@
             } else {
                 // 显示输入框
                 document.getElementById("options").style.display = "none";
+                document.getElementById("input-answer").disabled = false;
                 document.getElementById("input-answer").style.display = "flex";
                 document.getElementById("answer-input").value = ""; // 清空输入框
                 document.getElementById("answer-input").focus();
@@ -554,12 +641,13 @@
                     renderQuestion(); // 渲染下一题
                 } else {
                     effectToast("恭喜你通关了！", true);
-                    renderLevelSelect();
-                    renderQuestion(); // 渲染下一题
+                    showSummary()
+                    // renderLevelSelect();
                 }
             } else if (playerHP <= 0) {
                 effectToast("你输了！", false);
-                renderLevelSelect();
+                showSummary()
+                // renderLevelSelect();
             } else {
                 renderQuestion(); // 渲染下一题
             }
@@ -578,19 +666,69 @@
         }
 
         function submitAnswer(answer) {
+            totalAttempts++; // 总答题数 +1
             if (!answer) {
+                document.getElementById("input-answer").disabled = true;
                 answer = document.getElementById("answer-input").value.trim(); // 获取用户输入
             }
             attackVal = (currentQuestion.difficulty+1) * 5
             if (answer.toLowerCase() === currentQuestion.answer.toLowerCase()) {
+                correctCount++; // 正确数 +1
                 bossHP -= attackVal;
                 showAttackEffect(true);
             } else {
                 playerHP -= attackVal;
                 showAttackEffect(false);
+                // 记录错误题目及知识点
+                wrongQuestions.push({
+                    question: currentQuestion,
+                    userAnswer: answer,
+                });
             }
             updateHealthBars();
             checkGameStatus();
+        }
+
+        // 闯关总结函数
+        function showSummary() {
+            document.getElementById("summary-container").style.display = "block";
+            document.getElementById("game-container").style.display = "none";
+            // 计算正确率
+            const accuracy = ((correctCount / totalAttempts) * 100).toFixed(2);
+
+            // 获取页面元素
+            const attemptsElement = document.getElementById("attempts");
+            const accuracyElement = document.getElementById("accuracy");
+            const wrongSection = document.getElementById("wrong-section");
+            const wrongList = document.getElementById("wrong-list");
+
+            // 填充统计数据
+            attemptsElement.textContent = `累计答题次数: ${totalAttempts}`;
+            accuracyElement.textContent = `正确率: ${accuracy}%`;
+
+            // 填充错误题目信息
+            if (wrongQuestions.length > 0) {
+                wrongSection.style.display = "block";
+                wrongList.innerHTML = ""; // 清空列表
+                wrongQuestions.forEach((item, index) => {
+                    const listItem = document.createElement("li");
+                    let qaHtml = `<p><strong>${index + 1}. 题目:</strong> ${item.question.question}`
+                    if (item.question.img!= ""){
+                        qaHtml += `<img src="${item.question.img}">`;
+                    }
+                    qaHtml += `</p><p><span class="highlight">你的答案:</span> ${item.userAnswer}</p>
+                        <p><strong>正确答案:</strong> ${item.question.answer}</p>
+                    `;
+                    if (item.question.knowledge!= ""){
+                        qaHtml += `<p><em>知识点:</em> ${item.question.knowledge}</p>`;
+                    }
+                    listItem.innerHTML = qaHtml;
+                    wrongList.appendChild(listItem);
+                });
+            } else {
+                // 如果没有错题，隐藏错误区域
+                wrongSection.innerHTML = "<p>太棒了！你没有做错任何题目！</p>";
+            }
         }
 
         function resetGame(setLevel = 1) {
@@ -614,6 +752,9 @@
             effectToast("新游戏开始！", false);
             renderQuestion();
         }
+
+        // 按钮事件绑定
+        document.getElementById("return-button").addEventListener("click", renderLevelSelect);
 
         // 初始化
         resetGame(1);

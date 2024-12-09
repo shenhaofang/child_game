@@ -1,21 +1,19 @@
 const questions = [
     // {
     //     question: "2 + 2 等于几？",
+    //     img: "",
     //     options: ["3", "4", "5"],
     //     answer: "4",
+    //     knowledge: "",
     //     difficulty: 1
     // },
     // {
     //     question: "HTTP 的默认端口号是？",
+    //     img: "",
     //     options: [],
     //     answer: "80",
+    //     knowledge: "http的默认端口号是80",
     //     difficulty: 2
-    // },
-    // {
-    //     question: "Python 的作者是谁？",
-    //     options: [],
-    //     answer: "Guido van Rossum",
-    //     difficulty: 3
     // }
 ];
 
@@ -38,14 +36,18 @@ function autoMathAddOrSub(difficulty = 1, num = 10) {
         if (i%2 == 0){
             questions.push({
                 question: `${a} + ${b} = ?`,
+                img: "",
                 options: [],
+                knowledge: "加法",
                 answer: c.toString(),
                 difficulty: difficulty
             })
         }else{
             questions.push({
                 question: `${c} - ${a} = ?`,
+                img: "",
                 options: [],
+                knowledge: "减法",
                 answer: b.toString(),
                 difficulty: difficulty
             })
@@ -59,21 +61,25 @@ function autoMathMultiDiv(difficulty = 1, num = 10){
     //     digit -= 2
     // }
     for (let i = 0; i < num; i++) {
-        let c = randomInt(difficulty);
-        let a = randomInt(difficulty)+1;
-        let b = Math.floor(c / a);
+        let a = randomInt(Math.floor(difficulty/2));
+        let b = randomInt(Math.floor(difficulty/2));
+        
         c = a * b;
         if (i%2 == 0 || (a == 0 && b == 0)){
             questions.push({
                 question: `${a} × ${b} = ?`,
+                img: "",
                 options: [],
+                knowledge: "乘法",
                 answer: c.toString(),
                 difficulty: difficulty
             })
         }else{
             questions.push({
                 question: `${c} ÷ ${a} = ?`,
+                img: "",
                 options: [],
+                knowledge: "除法",
                 answer: b.toString(),
                 difficulty: difficulty
             })
@@ -179,8 +185,10 @@ function poetryQuestionMaker1(poetry, optionAnswer = false){
     let contentIdx = Math.floor(Math.random() * poetry.content.length);
     let res =  {
         question: `请写出《${poetry.title}》的第${contentIdx+1}小句`,
+        img: "",
         options: [],
         answer: poetry.content[contentIdx],
+        knowledge: poetryKnowledgeMaker(poetry),
         difficulty: poetry.difficulty+2
     }
     if (optionAnswer){
@@ -205,6 +213,14 @@ function shuffle(arr) {
     }
 }
 
+function poetryKnowledgeMaker(poetry){
+    let ret = `《${poetry.title}》 ${poetry.dynasty} ${poetry.author}<br/>`;
+    for (let i = 0; i < poetry.content.length; i++) {
+        ret += `${poetry.content[i]}<br/>`
+    }
+    return ret
+}
+
 function poetryQuestionMaker2(poetry, optionAnswer = false){
     let contentIdx = Math.floor(Math.random() * poetry.content.length);
     if (contentIdx > poetry.content.length-1) {
@@ -216,8 +232,10 @@ function poetryQuestionMaker2(poetry, optionAnswer = false){
         }
         let res = {
             question: `请写出《${poetry.title}》中“${poetry.content[contentIdx]}”的下一句`,
+            img: "",
             options: [],
             answer: poetry.content[contentIdx+1],
+            knowledge: poetryKnowledgeMaker(poetry),
             difficulty: poetry.difficulty+1
         };
         if (optionAnswer){
@@ -235,8 +253,10 @@ function poetryQuestionMaker2(poetry, optionAnswer = false){
     }else{
         let res = {
             question: `请写出《${poetry.title}》中“${poetry.content[contentIdx]}”的上一句`,
+            img: "",
             options: [],
             answer: poetry.content[contentIdx-1],
+            knowledge: poetryKnowledgeMaker(poetry),
             difficulty: poetry.difficulty+1
         };
         if (optionAnswer){
@@ -262,8 +282,10 @@ function poetryQuestionMaker3(poetry, options = []){
     secs = poetry.content.slice(contentIdx, contentIdx+2).join("<br/>");
     res = {
         question: `${secs}<br/>请说出此句出自哪首诗？`,
+        img: "",
         options: [],
         answer: poetry.title,
+        knowledge: poetryKnowledgeMaker(poetry),
         difficulty: poetry.difficulty
     }
     if (options.length > 2){
@@ -287,8 +309,10 @@ function poetryQuestionMaker4(poetry, options = []){
     secs = poetry.content.slice(contentIdx, contentIdx+2).join("<br/>");
     res = {
         question: `${secs}<br/>请说出此句的作者是谁？`,
+        img: "",
         options: [],
         answer: poetry.author,
+        knowledge: poetryKnowledgeMaker(poetry),
         difficulty: poetry.difficulty
     }
     if (options.length > 2){
