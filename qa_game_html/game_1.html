@@ -151,6 +151,10 @@
             padding: 10px;
             max-width: 80%; /* 防止太宽 */
             text-align: center;
+            /* border: 1px solid #ccc;
+            border-radius: 8px; */
+            /* background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
         }
 
         /* 问题样式 */
@@ -203,17 +207,20 @@
             justify-content: center;
             flex-wrap: wrap; /* 允许多行选项 */
             gap: 15px; /* 选项之间的间距 */
+            color: #333333;
         }
 
         .option {
             padding: 10px 20px;
             background-color: #ddd;
+            border: 2px solid transparent;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
         .option:hover {
+            border-color: #007BFF;
             background-color: #bbb;
         }
 
