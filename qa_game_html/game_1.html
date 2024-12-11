@@ -410,10 +410,12 @@
             <div class="health-bar" id="player-bar-container">
                 <div id="player-hp" class="hp-bar"></div>
                 <div class="character-name" id="player-name">Player</div>
+                <audio id="player-attack-sound" src="sounds/stick-attack.mp3" preload="auto"></audio>
             </div>
             <div class="health-bar" id="boss-bar-container">
                 <div id="boss-hp" class="hp-bar"></div>
                 <div class="character-name" id="boss-name">Boss</div>
+                <audio id="boss-attack-sound" src="sounds/monster-attack.mp3" preload="auto"></audio>
             </div>
         </div>
         <!-- 角色 -->
@@ -461,15 +463,16 @@
             image: "images/player.gif",
             image_attack: "images/player.gif",
             hp: calPlayerHP(level),
+            attack_sound: "sounds/stick-attack.mp3",
         }
 
         const bosses = [
-            { name: "黑熊精", image: "images/level1_boss.png", image_attack: "images/level1_boss_attack.png", hp: 50, bg: "images/bg1.webp" },
-            { name: "黄风大圣", image: "images/level2_boss.png", image_attack: "images/level2_boss.png", hp: 80, bg: "images/bg2.webp" },
-            { name: "黄眉老佛", image: "images/level3_boss.png", image_attack: "images/level3_boss.png", hp: 120, bg: "images/bg3.webp" },
-            { name: "百眼魔君", image: "images/level4_boss.png", image_attack: "images/level4_boss.png", hp: 180, bg: "images/bg4.webp" },
-            { name: "夜叉王", image: "images/level5_boss.png", image_attack: "images/level5_boss_attack.png", hp: 220, bg: "images/bg5.webp" },
-            { name: "大圣残躯", image: "images/level6_boss.png", image_attack: "images/level6_boss.png", hp: 300, bg: "images/bg6.webp" },
+            { name: "黑熊精", image: "images/level1_boss.png", image_attack: "images/level1_boss_attack.png", hp: 50, bg: "images/bg1.webp", attack_sound: "sounds/monster-attack.mp3" },
+            { name: "黄风大圣", image: "images/level2_boss.png", image_attack: "images/level2_boss.png", hp: 80, bg: "images/bg2.webp", attack_sound: "sounds/sword-attack.mp3" },
+            { name: "黄眉老佛", image: "images/level3_boss.png", image_attack: "images/level3_boss.png", hp: 120, bg: "images/bg3.webp", attack_sound: "sounds/stick-attack.mp3" },
+            { name: "百眼魔君", image: "images/level4_boss.png", image_attack: "images/level4_boss.png", hp: 180, bg: "images/bg4.webp", attack_sound: "sounds/magic-attack.mp3" },
+            { name: "夜叉王", image: "images/level5_boss.png", image_attack: "images/level5_boss_attack.png", hp: 220, bg: "images/bg5.webp", attack_sound: "sounds/sword-attack2.mp3" },
+            { name: "大圣残躯", image: "images/level6_boss.png", image_attack: "images/level6_boss.png", hp: 300, bg: "images/bg6.webp", attack_sound: "sounds/stick-attack.mp3" },
         ];
 
         // const questions = [
@@ -517,6 +520,7 @@
             // animation.classList.contains("active");
             let bossImg = document.getElementById("boss-image");
             bossImg.src = boss.image;
+            document.getElementById("boss-attack-sound").src = boss.attack_sound;
             if (bossImg.classList.contains("boss-hurt")) {
                 bossImg.addEventListener('animationend', () => {
                     bossImg.classList.remove("boss-hurt");
@@ -627,6 +631,13 @@
 
             playCharacterAnimation(attackerId, attackClass, attackerImg); // 攻击动画
             playCharacterAnimation(defenderId, hurtClass, "");  // 受伤动画
+
+            const attackerSound = isPlayer? 'player-attack-sound' : 'boss-attack-sound';
+
+            attackSound = document.getElementById(attackerSound);
+            // 播放音效
+            attackSound.currentTime = 0; // 每次播放前重置音效进度
+            attackSound.play();
         }
 
         function showLevelUp() {
@@ -747,6 +758,7 @@
             player.hp = playerHP
             document.getElementById("player-name").textContent = player.name;
             document.getElementById("player-image").src = player.image;
+            document.getElementById("player-attack-sound").src = player.attack_sound;
             
             // 重置Boss信息
             updateBossInfo();
