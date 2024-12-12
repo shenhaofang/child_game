@@ -18,7 +18,7 @@ const questions = [
 ];
 
 function randomInt(difficulty = 1){
-    return Math.floor(Math.random() * Math.pow(10, difficulty+1))
+    return Math.floor(Math.random() * Math.pow(10, difficulty))
 }
 
 function autoMathQuestions(difficulty = 1, num = 10){
@@ -259,7 +259,7 @@ const poetrys = [
     {
         title: "别董大",
         dynasty: "唐",
-        dynasty: "高适",
+        author: "高适",
         difficulty: 2,
         content: ["千里黄云白日曛", "北风吹雁雪纷纷", "莫愁前路无知己", "天下谁人不识君"]
     },
@@ -292,11 +292,11 @@ const poetrys = [
         content: ["朝辞白帝彩云间", "千里江陵一日还", "两岸猿声啼不住", "轻舟已过万重山"]
     },
     {
-        "title": "秋浦歌",
-        "dynasty": "唐",
-        "author": "李白",
-        "difficulty": 2,
-        "content": [
+        title: "秋浦歌",
+        dynasty: "唐",
+        author: "李白",
+        difficulty: 2,
+        content:  [
             "白发三千丈",
             "缘愁似个长",
             "不知明镜里",
@@ -304,11 +304,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "望天门山",
-        "dynasty": "唐",
-        "author": "李白",
-        "difficulty": 2,
-        "content": [
+        title: "望天门山",
+        dynasty: "唐",
+        author: "李白",
+        difficulty: 2,
+        content:  [
             "天门中断楚江开",
             "碧水东流至此回",
             "两岸青山相对出",
@@ -316,11 +316,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "闻官军收河南河北",
-        "dynasty": "唐",
-        "author": "杜甫",
-        "difficulty": 2,
-        "content": [
+        title: "闻官军收河南河北",
+        dynasty: "唐",
+        author: "杜甫",
+        difficulty: 2,
+        content:  [
             "剑外忽传收蓟北",
             "初闻涕泪满衣裳",
             "却看妻子愁何在",
@@ -332,11 +332,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "赠花卿",
-        "dynasty": "唐",
-        "author": "杜甫",
-        "difficulty": 2,
-        "content": [
+        title: "赠花卿",
+        dynasty: "唐",
+        author: "杜甫",
+        difficulty: 2,
+        content:  [
             "锦城丝管日纷纷",
             "半入江风半入云",
             "此曲只应天上有",
@@ -344,11 +344,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "江南逢李龟年",
-        "dynasty": "唐",
-        "author": "杜甫",
-        "difficulty": 2,
-        "content": [
+        title: "江南逢李龟年",
+        dynasty: "唐",
+        author: "杜甫",
+        difficulty: 2,
+        content:  [
             "岐王宅里寻常见",
             "崔九堂前几度闻",
             "正是江南好风景",
@@ -356,11 +356,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "春夜喜雨",
-        "dynasty": "唐",
-        "author": "杜甫",
-        "difficulty": 2,
-        "content": [
+        title: "春夜喜雨",
+        dynasty: "唐",
+        author: "杜甫",
+        difficulty: 2,
+        content:  [
             "好雨知时节",
             "当春乃发生",
             "随风潜入夜",
@@ -372,11 +372,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "江畔独步寻花",
-        "dynasty": "唐",
-        "author": "杜甫",
-        "difficulty": 2,
-        "content": [
+        title: "江畔独步寻花",
+        dynasty: "唐",
+        author: "杜甫",
+        difficulty: 2,
+        content:  [
             "黄四娘家花满蹊",
             "千朵万朵压枝低",
             "留连戏蝶时时舞",
@@ -384,11 +384,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "逢雪宿芙蓉山主人",
-        "dynasty": "唐",
-        "author": "刘长卿",
-        "difficulty": 2,
-        "content": [
+        title: "逢雪宿芙蓉山主人",
+        dynasty: "唐",
+        author: "刘长卿",
+        difficulty: 2,
+        content:  [
             "日暮苍山远",
             "天寒白屋贫",
             "柴门闻犬吠",
@@ -396,11 +396,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "江雪",
-        "dynasty": "唐",
-        "author": "柳宗元",
-        "difficulty": 2,
-        "content": [
+        title: "江雪",
+        dynasty: "唐",
+        author: "柳宗元",
+        difficulty: 2,
+        content:  [
             "千山鸟飞绝",
             "万径人踪灭",
             "孤舟蓑笠翁",
@@ -408,11 +408,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "寻隐者不遇",
-        "dynasty": "唐",
-        "author": "贾岛",
-        "difficulty": 2,
-        "content": [
+        title: "寻隐者不遇",
+        dynasty: "唐",
+        author: "贾岛",
+        difficulty: 2,
+        content:  [
             "松下问童子",
             "言师采药去",
             "只在此山中",
@@ -420,11 +420,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "枫桥夜泊",
-        "dynasty": "唐",
-        "author": "张继",
-        "difficulty": 2,
-        "content": [
+        title: "枫桥夜泊",
+        dynasty: "唐",
+        author: "张继",
+        difficulty: 2,
+        content:  [
             "月落乌啼霜满天",
             "江枫渔火对愁眠",
             "姑苏城外寒山寺",
@@ -432,24 +432,23 @@ const poetrys = [
         ]
     },
     {
-        "title": "渔歌子",
-        "dynasty": "唐",
-        "author": "张志和",
-        "difficulty": 2,
-        "content": [
+        title: "渔歌子",
+        dynasty: "唐",
+        author: "张志和",
+        difficulty: 2,
+        content:  [
             "西塞山前白鹭飞",
             "桃花流水鳜鱼肥",
-            "青箬笠",
-            "绿蓑衣",
+            "青箬笠，绿蓑衣",
             "斜风细雨不须归"
         ]
     },
     {
-        "title": "寒食",
-        "dynasty": "唐",
-        "author": "韩翃",
-        "difficulty": 2,
-        "content": [
+        title: "寒食",
+        dynasty: "唐",
+        author: "韩翃",
+        difficulty: 2,
+        content:  [
             "春城无处不飞花",
             "寒食东风御柳斜",
             "日暮汉宫传蜡烛",
@@ -457,11 +456,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "滁州西涧",
-        "dynasty": "唐",
-        "author": "韦应物",
-        "difficulty": 2,
-        "content": [
+        title: "滁州西涧",
+        dynasty: "唐",
+        author: "韦应物",
+        difficulty: 2,
+        content:  [
             "独怜幽草涧边生",
             "上有黄鹂深树鸣",
             "春潮带雨晚来急",
@@ -469,11 +468,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "游子吟",
-        "dynasty": "唐",
-        "author": "孟郊",
-        "difficulty": 2,
-        "content": [
+        title: "游子吟",
+        dynasty: "唐",
+        author: "孟郊",
+        difficulty: 2,
+        content:  [
             "慈母手中线",
             "游子身上衣",
             "临行密密缝",
@@ -483,11 +482,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "竹枝词",
-        "dynasty": "唐",
-        "author": "刘禹锡",
-        "difficulty": 2,
-        "content": [
+        title: "竹枝词",
+        dynasty: "唐",
+        author: "刘禹锡",
+        difficulty: 2,
+        content:  [
             "杨柳青青江水平",
             "闻郎江上唱歌声",
             "东边日出西边雨",
@@ -495,11 +494,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "乌衣巷",
-        "dynasty": "唐",
-        "author": "刘禹锡",
-        "difficulty": 2,
-        "content": [
+        title: "乌衣巷",
+        dynasty: "唐",
+        author: "刘禹锡",
+        difficulty: 2,
+        content:  [
             "朱雀桥边野草花",
             "乌衣巷口夕阳斜",
             "旧时王谢堂前燕",
@@ -507,11 +506,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "望洞庭",
-        "dynasty": "唐",
-        "author": "刘禹锡",
-        "difficulty": 2,
-        "content": [
+        title: "望洞庭",
+        dynasty: "唐",
+        author: "刘禹锡",
+        difficulty: 2,
+        content:  [
             "湖光秋月两相和",
             "潭面无风镜未磨",
             "遥望洞庭山水翠",
@@ -519,11 +518,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "浪淘沙",
-        "dynasty": "唐",
-        "author": "刘禹锡",
-        "difficulty": 2,
-        "content": [
+        title: "浪淘沙",
+        dynasty: "唐",
+        author: "刘禹锡",
+        difficulty: 2,
+        content:  [
             "九曲黄河万里沙",
             "浪淘风簸自天涯",
             "如今直上银河去",
@@ -531,11 +530,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "赋得古原草送别",
-        "dynasty": "唐",
-        "author": "白居易",
-        "difficulty": 2,
-        "content": [
+        title: "赋得古原草送别",
+        dynasty: "唐",
+        author: "白居易",
+        difficulty: 2,
+        content:  [
             "离离原上草",
             "一岁一枯荣",
             "野火烧不尽",
@@ -547,11 +546,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "忆江南",
-        "dynasty": "唐",
-        "author": "白居易",
-        "difficulty": 2,
-        "content": [
+        title: "忆江南",
+        dynasty: "唐",
+        author: "白居易",
+        difficulty: 2,
+        content:  [
             "江南好",
             "风景旧曾谙",
             "日出江花红胜火",
@@ -560,11 +559,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "山行",
-        "dynasty": "唐",
-        "author": "杜牧",
-        "difficulty": 2,
-        "content": [
+        title: "山行",
+        dynasty: "唐",
+        author: "杜牧",
+        difficulty: 2,
+        content:  [
             "远上寒山石径斜",
             "白云生处有人家",
             "停车坐爱枫林晚",
@@ -572,11 +571,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "清明",
-        "dynasty": "唐",
-        "author": "杜牧",
-        "difficulty": 2,
-        "content": [
+        title: "清明",
+        dynasty: "唐",
+        author: "杜牧",
+        difficulty: 2,
+        content:  [
             "清明时节雨纷纷",
             "路上行人欲断魂",
             "借问酒家何处有",
@@ -584,11 +583,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "江南春",
-        "dynasty": "唐",
-        "author": "杜牧",
-        "difficulty": 2,
-        "content": [
+        title: "江南春",
+        dynasty: "唐",
+        author: "杜牧",
+        difficulty: 2,
+        content:  [
             "千里莺啼绿映红",
             "水村山郭酒旗风",
             "南朝四百八十寺",
@@ -596,11 +595,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "秋夕",
-        "dynasty": "唐",
-        "author": "杜牧",
-        "difficulty": 2,
-        "content": [
+        title: "秋夕",
+        dynasty: "唐",
+        author: "杜牧",
+        difficulty: 2,
+        content:  [
             "银烛秋光冷画屏",
             "轻罗小扇扑流萤",
             "天阶夜色凉如水",
@@ -608,11 +607,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "乐游原",
-        "dynasty": "唐",
-        "author": "李商隐",
-        "difficulty": 2,
-        "content": [
+        title: "乐游原",
+        dynasty: "唐",
+        author: "李商隐",
+        difficulty: 2,
+        content:  [
             "向晚意不适",
             "驱车登古原",
             "夕阳无限好",
@@ -620,11 +619,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "元日",
-        "dynasty": "宋",
-        "author": "王安石",
-        "difficulty": 2,
-        "content": [
+        title: "元日",
+        dynasty: "宋",
+        author: "王安石",
+        difficulty: 2,
+        content:  [
             "爆竹声中一岁除",
             "春风送暖入屠苏",
             "千门万户曈曈日",
@@ -632,11 +631,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "泊船瓜洲",
-        "dynasty": "宋",
-        "author": "王安石",
-        "difficulty": 2,
-        "content": [
+        title: "泊船瓜洲",
+        dynasty: "宋",
+        author: "王安石",
+        difficulty: 2,
+        content:  [
             "京口瓜洲一水间",
             "钟山只隔数重山",
             "春风又绿江南岸",
@@ -644,11 +643,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "梅花",
-        "dynasty": "宋",
-        "author": "王安石",
-        "difficulty": 2,
-        "content": [
+        title: "梅花",
+        dynasty: "宋",
+        author: "王安石",
+        difficulty: 2,
+        content:  [
             "墙角数枝梅",
             "凌寒独自开",
             "遥知不是雪",
@@ -656,11 +655,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "望湖楼醉书",
-        "dynasty": "宋",
-        "author": "苏轼",
-        "difficulty": 2,
-        "content": [
+        title: "望湖楼醉书",
+        dynasty: "宋",
+        author: "苏轼",
+        difficulty: 2,
+        content:  [
             "黑云翻墨未遮山",
             "白雨跳珠乱入船",
             "卷地风来忽吹散",
@@ -668,11 +667,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "饮湖上初晴后雨",
-        "dynasty": "宋",
-        "author": "苏轼",
-        "difficulty": 2,
-        "content": [
+        title: "饮湖上初晴后雨",
+        dynasty: "宋",
+        author: "苏轼",
+        difficulty: 2,
+        content:  [
             "水光潋滟晴方好",
             "山色空濛雨亦奇",
             "欲把西湖比西子",
@@ -680,11 +679,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "惠崇春江晓景",
-        "dynasty": "宋",
-        "author": "苏轼",
-        "difficulty": 2,
-        "content": [
+        title: "惠崇春江晓景",
+        dynasty: "宋",
+        author: "苏轼",
+        difficulty: 2,
+        content:  [
             "竹外桃花三两枝",
             "春江水暖鸭先知",
             "蒌蒿满地芦芽短",
@@ -692,11 +691,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "题西林壁",
-        "dynasty": "宋",
-        "author": "苏轼",
-        "difficulty": 2,
-        "content": [
+        title: "题西林壁",
+        dynasty: "宋",
+        author: "苏轼",
+        difficulty: 2,
+        content:  [
             "横看成岭侧成峰",
             "远近高低各不同",
             "不识庐山真面目",
@@ -704,11 +703,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "夏日绝句",
-        "dynasty": "宋",
-        "author": "李清照",
-        "difficulty": 2,
-        "content": [
+        title: "夏日绝句",
+        dynasty: "宋",
+        author: "李清照",
+        difficulty: 2,
+        content:  [
             "生当作人杰",
             "死亦为鬼雄",
             "至今思项羽",
@@ -716,11 +715,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "示儿",
-        "dynasty": "宋",
-        "author": "陆游",
-        "difficulty": 2,
-        "content": [
+        title: "示儿",
+        dynasty: "宋",
+        author: "陆游",
+        difficulty: 2,
+        content:  [
             "死去元知万事空",
             "但悲不见九州同",
             "王师北定中原日",
@@ -728,11 +727,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "晓出净慈寺送林子方",
-        "dynasty": "宋",
-        "author": "杨万里",
-        "difficulty": 2,
-        "content": [
+        title: "晓出净慈寺送林子方",
+        dynasty: "宋",
+        author: "杨万里",
+        difficulty: 2,
+        content:  [
             "毕竟西湖六月中",
             "风光不与四时同",
             "接天莲叶无穷碧",
@@ -740,11 +739,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "四时田园杂兴",
-        "dynasty": "宋",
-        "author": "范成大",
-        "difficulty": 2,
-        "content": [
+        title: "四时田园杂兴",
+        dynasty: "宋",
+        author: "范成大",
+        difficulty: 2,
+        content:  [
             "昼出耘田夜绩麻",
             "村庄儿女各当家",
             "童孙未解供耕织",
@@ -752,11 +751,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "春日",
-        "dynasty": "宋",
-        "author": "朱熹",
-        "difficulty": 2,
-        "content": [
+        title: "春日",
+        dynasty: "宋",
+        author: "朱熹",
+        difficulty: 2,
+        content:  [
             "胜日寻芳泗水滨",
             "无边光景一时新",
             "等闲识得东风面",
@@ -764,11 +763,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "题临安邸",
-        "dynasty": "宋",
-        "author": "林升",
-        "difficulty": 2,
-        "content": [
+        title: "题临安邸",
+        dynasty: "宋",
+        author: "林升",
+        difficulty: 2,
+        content:  [
             "山外青山楼外楼",
             "西湖歌舞几时休",
             "暖风熏得游人醉",
@@ -776,11 +775,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "墨梅",
-        "dynasty": "元",
-        "author": "王冕",
-        "difficulty": 2,
-        "content": [
+        title: "墨梅",
+        dynasty: "元",
+        author: "王冕",
+        difficulty: 2,
+        content:  [
             "吾家洗砚池头树",
             "朵朵花开淡墨痕",
             "不要人夸好颜色",
@@ -788,11 +787,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "石灰吟",
-        "dynasty": "明",
-        "author": "于谦",
-        "difficulty": 2,
-        "content": [
+        title: "石灰吟",
+        dynasty: "明",
+        author: "于谦",
+        difficulty: 2,
+        content:  [
             "千锤万凿出深山",
             "烈火焚烧若等闲",
             "粉骨碎身浑不怕",
@@ -800,11 +799,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "竹石",
-        "dynasty": "清",
-        "author": "郑燮",
-        "difficulty": 2,
-        "content": [
+        title: "竹石",
+        dynasty: "清",
+        author: "郑燮",
+        difficulty: 2,
+        content:  [
             "咬定青山不放松",
             "立根原在破岩中",
             "千磨万击还坚劲",
@@ -812,11 +811,11 @@ const poetrys = [
         ]
     },
     {
-        "title": "己亥杂诗",
-        "dynasty": "清",
-        "author": "龚自珍",
-        "difficulty": 2,
-        "content": [
+        title: "己亥杂诗",
+        dynasty: "清",
+        author: "龚自珍",
+        difficulty: 2,
+        content:  [
             "九州生气恃风雷",
             "万马齐喑究可哀",
             "我劝天公重抖擞",
@@ -923,9 +922,9 @@ function poetryQuestionMaker3(poetry, options = []){
     if (contentIdx >= poetry.content.length-1) {
         contentIdx = poetry.content.length-2
     }
-    secs = poetry.content.slice(contentIdx, contentIdx+2).join("<br/>");
+    secs = poetry.content.slice(contentIdx, contentIdx+2).join("，");
     res = {
-        question: `${secs}<br/>请说出此句出自哪首诗？`,
+        question: `${secs}。<br/>请说出此句出自哪首诗？`,
         img: "",
         options: [],
         answer: poetry.title,
@@ -950,9 +949,9 @@ function poetryQuestionMaker4(poetry, options = []){
     if (contentIdx >= poetry.content.length-1) {
         contentIdx = poetry.content.length-2
     }
-    secs = poetry.content.slice(contentIdx, contentIdx+2).join("<br/>");
+    secs = poetry.content.slice(contentIdx, contentIdx+2).join("，");
     res = {
-        question: `${secs}<br/>请说出此句的作者是谁？`,
+        question: `${secs}。<br/>请说出此句的作者是谁？`,
         img: "",
         options: [],
         answer: poetry.author,
@@ -975,10 +974,18 @@ function poetryQuestionMaker4(poetry, options = []){
 function autoPoetryQuestions(difficulty = 1, num = 10){
     difficultyPoetrys = [];
     allTitles = [];
+    existTitles = {};
     allAuthors = [];
+    existAuthors = {};
     for (let i = 0; i < poetrys.length; i++) {
-        allTitles.push(poetrys[i].title)
-        allAuthors.push(poetrys[i].author)
+        if (!existTitles[poetrys[i].title]){
+            allTitles.push(poetrys[i].title)
+        }
+        existTitles[poetrys[i].title] = true;
+        if (!existAuthors[poetrys[i].author]){
+            allAuthors.push(poetrys[i].author)
+        }
+        existAuthors[poetrys[i].author] = true;
         if (poetrys[i].difficulty == difficulty){
             difficultyPoetrys.push(poetrys[i])
         }
@@ -1009,3 +1016,4 @@ autoMathQuestions(4, 10)
 autoMathQuestions(5, 10)
 autoPoetryQuestions(1, 10)
 autoPoetryQuestions(2, 10)
+shuffle(questions)

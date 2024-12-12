@@ -71,19 +71,19 @@
         /* 血条样式 */
         .health-bar {
             width: 300px;
-            height: 30px;
+            height: 60px;
             position: relative;
         }
 
         .hp-bar {
             width: 100%;
-            height: 100%;
+            height: 50%;
             background-color: red;
         }
 
         .character-name {
             position: absolute;
-            top: 50%;
+            top: 20%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 14px;
@@ -222,6 +222,29 @@
         .option:hover {
             border-color: #007BFF;
             background-color: #bbb;
+        }
+
+        #active-skill-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top:10px;
+        }
+
+        .active-skill-button {
+            padding:20px 20px;
+            background-size: cover;
+        }
+
+        #passive-skill-container {
+            display: flex;
+            width: 100%;
+            height: 50%;
+        }
+
+        .passive-skill-button {
+            padding: 15px 15px;
+            background-size: cover;
         }
 
         /* 角色的攻击和受伤动画 */
@@ -388,6 +411,48 @@
             background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
         }
 
+        /* 弹层的全屏黑色背景 */
+        #skill-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* 技能内容居中显示 */
+        .skill-content {
+            text-align: center;
+            color: white;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .skill-content img {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+        }
+
+        .skill-content p {
+            font-size: 18px;
+        }
+
+        /* 渐入动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
     </style>
     <script src="questions.js"></script>
 </head>
@@ -404,18 +469,27 @@
             <button id="return-button">返回</button>
         </div>
     </div>
+    <div id="skill-overlay" style="display: none;">
+        <div class="skill-content">
+            <img id="skill-icon" src="" alt="Skill Icon">
+            <p id="skill-description"></p>
+        </div>
+    </div>
     <div id="game-container" style="display: none;">
         <!-- 血条 -->
         <div class="health-bar-container">
             <div class="health-bar" id="player-bar-container">
                 <div id="player-hp" class="hp-bar"></div>
                 <div class="character-name" id="player-name">Player</div>
+                <div id="passive-skill-container"></div> 
                 <audio id="player-attack-sound" src="sounds/stick-attack.mp3" preload="auto"></audio>
+                <audio id="player-hurt-sound" src="sounds/hurt.mp3" preload="auto"></audio>
             </div>
             <div class="health-bar" id="boss-bar-container">
                 <div id="boss-hp" class="hp-bar"></div>
                 <div class="character-name" id="boss-name">Boss</div>
                 <audio id="boss-attack-sound" src="sounds/monster-attack.mp3" preload="auto"></audio>
+                <audio id="boss-hurt-sound" src="sounds/hurt.mp3" preload="auto"></audio>
             </div>
         </div>
         <!-- 角色 -->
@@ -432,6 +506,7 @@
                 <input type="text" id="answer-input" placeholder="输入答案...">
                 <button onclick="submitAnswer()">提交</button>
             </div>
+            <div id="active-skill-container"></div> 
         </div>
     </div>
     <div id="level-up">获胜！</div>
@@ -445,7 +520,6 @@
             </div>
         </div>
     </div>
-    <!-- <img src="images/bg1.webp" style="background-color: #000000;" alt="Test Transparent"> -->
     <script>
         // 全局变量
         let level = 1;
@@ -458,21 +532,120 @@
         let correctCount = 0;  // 累计答对次数
         let wrongQuestions = []; // 做错题目记录
 
-        player = {
+        let currentLevelWrongCount = 0; // 当前关卡的错误次数
+
+        let player = {
             name: "孙悟空", 
             image: "images/player.gif",
             image_attack: "images/player.gif",
             hp: calPlayerHP(level),
             attack_sound: "sounds/stick-attack.mp3",
+            hurt_sound: "sounds/hurt.mp3",
+            on_dead: function() {
+                return true;
+            },
+            skills: {},
+        }
+        let skills = {
+            "life_saving_hair": {
+                name: "救命毫毛",
+                description: "尸解奇术，如遇丧命之难，自行施展以脑后毫毛，替换前身赴死",
+                icon: "images/life_saving_hair.png",
+                passive: true,
+                on_dead: () => {
+                    if (player.skills["life_saving_hair"] && player.skills["life_saving_hair"].value <= 0) {
+                        return true;
+                    }
+                    player.skills["life_saving_hair"].value--;
+                    player.hp = calPlayerHP(level);
+                    if (player.skills["life_saving_hair"].value <= 0) {
+                        renderSkills(false);
+                    }
+                    return false;
+                },
+                event_listener: ["on_dead"],
+                value: 1,
+            },
+            "ironhide": {
+                name: "铜头铁臂",
+                description: "短时间内化作一块金石，抵挡对手的攻击",
+                icon: "images/ironhide.png",
+                passive: false,
+                value: 3,
+                do: async () =>{
+                    if (player.skills["ironhide"] && player.skills["ironhide"].value <= 0) {
+                        return;
+                    }
+                    player.skills["ironhide"].value--;
+                    document.getElementById("player-hurt-sound").src = "sounds/ironhide.mp3";
+                    await showAttackEffect(false);
+                    document.getElementById("player-hurt-sound").src = player.hurt_sound;
+                    checkGameStatus();
+                    if (player.skills["ironhide"].value <= 0) {
+                        renderSkills(false);
+                    }
+                }
+            }
         }
 
-        const bosses = [
-            { name: "黑熊精", image: "images/level1_boss.png", image_attack: "images/level1_boss_attack.png", hp: 50, bg: "images/bg1.webp", attack_sound: "sounds/monster-attack.mp3" },
-            { name: "黄风大圣", image: "images/level2_boss.png", image_attack: "images/level2_boss.png", hp: 80, bg: "images/bg2.webp", attack_sound: "sounds/sword-attack.mp3" },
-            { name: "黄眉老佛", image: "images/level3_boss.png", image_attack: "images/level3_boss.png", hp: 120, bg: "images/bg3.webp", attack_sound: "sounds/stick-attack.mp3" },
-            { name: "百眼魔君", image: "images/level4_boss.png", image_attack: "images/level4_boss.png", hp: 180, bg: "images/bg4.webp", attack_sound: "sounds/magic-attack.mp3" },
-            { name: "夜叉王", image: "images/level5_boss.png", image_attack: "images/level5_boss_attack.png", hp: 220, bg: "images/bg5.webp", attack_sound: "sounds/sword-attack2.mp3" },
-            { name: "大圣残躯", image: "images/level6_boss.png", image_attack: "images/level6_boss.png", hp: 300, bg: "images/bg6.webp", attack_sound: "sounds/stick-attack.mp3" },
+        let bosses = [
+            { 
+                name: "黑熊精", 
+                image: "images/level1_boss.png", 
+                image_attack: "images/level1_boss_attack.png", 
+                hp: 50, 
+                bg: "images/bg1.webp", 
+                attack_sound: "sounds/monster-attack.mp3",
+                hurt_sound: "sounds/hurt.mp3",
+                awards: ["ironhide","life_saving_hair"]
+            },
+            { 
+                name: "黄风大圣", 
+                image: "images/level2_boss.png", 
+                image_attack: "images/level2_boss.png", 
+                hp: 80, 
+                bg: "images/bg2.webp", 
+                attack_sound: "sounds/sword-attack.mp3",
+                hurt_sound: "sounds/hurt.mp3",
+                awards: ["ironhide"]
+            },
+            { 
+                name: "黄眉老佛", 
+                image: "images/level3_boss.png", 
+                image_attack: "images/level3_boss.png", 
+                hp: 120, 
+                bg: "images/bg3.webp", 
+                attack_sound: "sounds/stick-attack.mp3",
+                hurt_sound: "sounds/hurt.mp3"
+            },
+            { 
+                name: "百眼魔君", 
+                image: "images/level4_boss.png", 
+                image_attack: "images/level4_boss.png", 
+                hp: 180, 
+                bg: "images/bg4.webp", 
+                attack_sound: "sounds/magic-attack.mp3",
+                hurt_sound: "sounds/hurt.mp3"
+            },
+            { 
+                name: "夜叉王", 
+                image: "images/level5_boss.png", 
+                image_attack: "images/level5_boss_attack.png", 
+                hp: 220, 
+                bg: "images/bg5.webp", 
+                attack_sound: "sounds/sword-attack2.mp3",
+                hurt_sound: "sounds/hurt.mp3"
+            },
+            { 
+                name: "大圣残躯", 
+                image: "images/level6_boss.png", 
+                image_attack: "images/level6_boss.png", 
+                hp: 300, 
+                bg: "images/bg6.webp", 
+                attack_sound: "sounds/stick-attack.mp3",
+                hurt_sound: "sounds/hurt.mp3",
+                awards: ["life_saving_hair"]
+            },
         ];
 
         // const questions = [
@@ -521,6 +694,8 @@
             let bossImg = document.getElementById("boss-image");
             bossImg.src = boss.image;
             document.getElementById("boss-attack-sound").src = boss.attack_sound;
+            document.getElementById("boss-hurt-sound").src = boss.hurt_sound;
+            
             if (bossImg.classList.contains("boss-hurt")) {
                 bossImg.addEventListener('animationend', () => {
                     bossImg.classList.remove("boss-hurt");
@@ -537,6 +712,7 @@
             document.getElementById("game-container").style.backgroundImage = `url('${boss.bg}')`;
             bossHP = boss.hp;
             updateHealthBars();
+            renderSkills(false);
         }
 
         function updateHealthBars() {
@@ -614,7 +790,39 @@
             }
         }
 
-        function showAttackEffect(isPlayer) {
+        // 创建函数以等待音频播放完成
+        async function playAudioAndWait(audioPath, delay = 0) {
+            return new Promise((resolve, reject) => {
+                const audio = new Audio(audioPath);
+                if (delay > 0) {
+                    setTimeout(() => {
+                        audio.play().then(() => {
+                            console.log('Audio started playing');
+                            audio.addEventListener('ended', () => {
+                                console.log('Audio finished playing');
+                                resolve(); // 音频播放完成后继续执行
+                            });
+                        }).catch((error) => {
+                            console.error('Error playing audio:', error);
+                            reject(error);
+                        });
+                    }, delay);
+                    return;
+                }
+                audio.play().then(() => {
+                    console.log('Audio started playing');
+                    audio.addEventListener('ended', () => {
+                        console.log('Audio finished playing');
+                        resolve(); // 音频播放完成后继续执行
+                    });
+                }).catch((error) => {
+                    console.error('Error playing audio:', error);
+                    reject(error);
+                });
+            });
+        }
+
+        async function showAttackEffect(isPlayer) {
             showParticles(isPlayer);
 
             // 角色动作动画
@@ -633,11 +841,20 @@
             playCharacterAnimation(defenderId, hurtClass, "");  // 受伤动画
 
             const attackerSound = isPlayer? 'player-attack-sound' : 'boss-attack-sound';
-
             attackSound = document.getElementById(attackerSound);
+
+            const hurtSoundID = isPlayer ? 'boss-hurt-sound' : 'player-hurt-sound';
+            hurtSound = document.getElementById(hurtSoundID);
+
             // 播放音效
-            attackSound.currentTime = 0; // 每次播放前重置音效进度
-            attackSound.play();
+            // attackSound.currentTime = 0; // 每次播放前重置音效进度
+            // attackSound.play();
+            
+            // hurtSound.currentTime = 0; // 每次播放前重置音效进度
+            // hurtSound.play();
+
+            playAudioAndWait(attackSound.src);
+            await playAudioAndWait(hurtSound.src, 300);
         }
 
         function showLevelUp() {
@@ -646,10 +863,65 @@
             setTimeout(() => (levelUp.style.display = "none"), 2000);
         }
 
+        // 展示技能解锁弹层
+        function showSkillUnlock(skill) {
+            // 获取弹层元素
+            const overlay = document.getElementById('skill-overlay');
+            const skillIcon = document.getElementById('skill-icon');
+            const skillDescription = document.getElementById('skill-description');
+
+            // 更新技能图标和描述
+            skillIcon.src = skill.icon; // 假设技能对象中有图标路径
+            skillDescription.textContent = skill.description;
+
+            // 显示弹层
+            overlay.style.display = 'flex';
+
+            // 添加点击隐藏逻辑
+            overlay.onclick = () => {
+                overlay.style.display = 'none';
+            };
+        }
+
+        function addSkill(skillID) {
+            if (!skills[skillID]){
+                return
+            }
+            skill = skills[skillID];
+            player.skills[skillID] = {
+                name: skill.name,
+                value: skill.value
+            };
+            if (skill.event_listener && skill.event_listener.length > 0){
+                skill.event_listener.map((event) => {
+                    player[event] = skill[event];
+                });
+            }
+            showSkillUnlock(skill);
+        }
+
+        function onBossDefeated(){
+            bossIndex = level - 1;
+            const boss = bosses[bossIndex];
+            effectToast("获胜！", true);
+            if (boss && boss.awards.length > 0){
+                boss.awards.map((award, index) => {
+                    if (!skills[award]){
+                        return
+                    }
+                    let ri = Math.floor(Math.random()*3) + 1;
+                    if (currentLevelWrongCount > ri){
+                        return
+                    }
+                    addSkill(award);
+                })
+            } 
+        }
+
         // 检查游戏状态
         function checkGameStatus() {
             if (bossHP <= 0) {
-                effectToast("你击败了 Boss！", true);
+                onBossDefeated();
                 level++;
                 if (level <= bosses.length) {
                     showLevelUp();
@@ -657,18 +929,20 @@
                     playerHP = Math.min(playerHP + 20, player.hp);
                     updateBossInfo();
                     renderQuestion(); // 渲染下一题
-                } else {
-                    effectToast("恭喜你通关了！", true);
-                    showSummary()
-                    // renderLevelSelect();
+                    currentLevelWrongCount = 0;
+                    return;
                 }
+                effectToast("恭喜你通关了！", true);
+                showSummary();
+                return;
             } else if (playerHP <= 0) {
-                effectToast("你输了！", false);
-                showSummary()
-                // renderLevelSelect();
-            } else {
-                renderQuestion(); // 渲染下一题
+                if (player.on_dead()){
+                    effectToast("你输了！", false);
+                    showSummary();
+                    return;
+                }
             }
+            renderQuestion(); // 渲染下一题
         }
 
         function effectToast(message, isPlayer) {
@@ -695,6 +969,7 @@
                 bossHP -= attackVal;
                 showAttackEffect(true);
             } else {
+                currentLevelWrongCount++;
                 playerHP -= attackVal;
                 showAttackEffect(false);
                 // 记录错误题目及知识点
@@ -749,6 +1024,39 @@
             }
         }
 
+        function sillDo(skillID = ''){
+            if (!skills[skillID]) {
+                return
+            }
+            const skill = skills[skillID];
+            if (skill.do) {
+                skill.do();
+            }
+        }
+
+        function renderSkills(reset = false){
+            const activeSkillContainer = document.getElementById("active-skill-container");
+            const passiveSkillContainer = document.getElementById("passive-skill-container");
+            passiveSkillHtml = "";
+            activeSkillHtml = "";
+            for(skillID in player.skills){
+                const skill = skills[skillID];
+                if (reset){
+                    player.skills[skillID].value = skill.value;
+                }
+                if (player.skills[skillID].value <= 0){
+                    return
+                }
+                if (skill.passive){
+                    passiveSkillHtml += `<div class="passive-skill-button" style="background-image: url('${skill.icon}');"></div>`
+                }else{
+                    activeSkillHtml += `<div onclick="sillDo('${skillID}')" class="active-skill-button" style="background-image: url('${skill.icon}');"></div>`
+                }
+            }
+            activeSkillContainer.innerHTML = activeSkillHtml;
+            passiveSkillContainer.innerHTML = passiveSkillHtml;
+        }
+
         function resetGame(setLevel = 1) {
             // 重置关卡
             level = setLevel;
@@ -756,10 +1064,13 @@
             // 重置玩家血量
             playerHP = calPlayerHP(level);
             player.hp = playerHP
+            currentLevelWrongCount = 0;
             document.getElementById("player-name").textContent = player.name;
             document.getElementById("player-image").src = player.image;
             document.getElementById("player-attack-sound").src = player.attack_sound;
-            
+            document.getElementById("player-hurt-sound").src = player.hurt_sound;
+            renderSkills(true);
+
             // 重置Boss信息
             updateBossInfo();
 
@@ -768,7 +1079,7 @@
             document.getElementById("game-container").style.display = "block";
 
             // 显示游戏开始的提示或初始化界面
-            effectToast("新游戏开始！", false);
+            effectToast("游戏开始！", false);
             renderQuestion();
         }
 
