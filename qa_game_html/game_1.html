@@ -534,22 +534,46 @@
 
         let currentLevelWrongCount = 0; // 当前关卡的错误次数
 
+        function baseDamageFixer (attacker) {
+            return {
+                damage: attacker.damage,
+                crit_rate: attacker.crit_rate,
+                crit_multiplier: attacker.crit_multiplier,
+            };
+        }
+
+        function basedefenseFixer (defender) {
+            return {
+                crit_immunity: false,
+                damage_reduction: 0,
+            };
+        }
+
         let player = {
-            name: "孙悟空", 
+            name: "天命人", 
             image: "images/player.gif",
             image_attack: "images/player.gif",
             hp: calPlayerHP(level),
+            damage: 100,
+            crit_rate: 0,
+            crit_multiplier: 0,
             attack_sound: "sounds/stick-attack.mp3",
             hurt_sound: "sounds/hurt.mp3",
             on_dead: function() {
                 return true;
             },
+            damageFixers: [
+                baseDamageFixer,
+            ],
+            defenseFixers: [
+                basedefenseFixer,
+            ],
             skills: {},
         }
         let skills = {
             "life_saving_hair": {
                 name: "救命毫毛",
-                description: "尸解奇术，如遇丧命之难，自行施展以脑后毫毛，替换前身赴死",
+                description: "救命毫毛，濒死时，自行施展，借毫毛将天命人起死复生。",
                 icon: "images/life_saving_hair.png",
                 passive: true,
                 on_dead: () => {
@@ -568,7 +592,7 @@
             },
             "ironhide": {
                 name: "铜头铁臂",
-                description: "短时间内化作一块金石，抵挡对手的攻击",
+                description: "铜头铁臂，瞬时如金石般坚硬，抵挡物理攻击。",
                 icon: "images/ironhide.png",
                 passive: false,
                 value: 3,
@@ -585,6 +609,30 @@
                         renderSkills(false);
                     }
                 }
+            },
+            "crit": {
+                name: "聚形散气",
+                description: "聚形散气，化作白烟，隐身遁走，寻找机会破隐一击。",
+                icon: "images/crit.png",
+                passive: true,
+                value: 1,
+                damageFixer: (attacker, damageAttr) => {
+                    return {
+                        damage: damageAttr.damage,
+                        crit_rate: 100,
+                        crit_multiplier: damageAttr.crit_multiplier+100,
+                    };
+                },
+                defenseFixer: (defender, defenseAttr) => {
+                    let ri = Math.floor(Math.random()*100);
+                    if (ri < 20){
+                        return defenseAttr;
+                    }
+                    return {
+                        crit_immunity: false,
+                        damage_reduction: 100,
+                    };
+                },
             }
         }
 
@@ -594,19 +642,35 @@
                 image: "images/level1_boss.png", 
                 image_attack: "images/level1_boss_attack.png", 
                 hp: 50, 
+                damage: 100,
+                crit_rate: 0,
+                crit_multiplier: 1,
                 bg: "images/bg1.webp", 
                 attack_sound: "sounds/monster-attack.mp3",
                 hurt_sound: "sounds/hurt.mp3",
-                awards: ["ironhide","life_saving_hair"]
+                damageFixers: [
+                    baseDamageFixer,
+                ],
+                defenseFixers: [],
+                awards: ["crit"]
             },
             { 
                 name: "黄风大圣", 
                 image: "images/level2_boss.png", 
                 image_attack: "images/level2_boss.png", 
                 hp: 80, 
+                damage: 100,
+                crit_rate: 0,
+                crit_multiplier: 1,
                 bg: "images/bg2.webp", 
                 attack_sound: "sounds/sword-attack.mp3",
                 hurt_sound: "sounds/hurt.mp3",
+                damageFixers: [
+                    baseDamageFixer,
+                ],
+                defenseFixers: [
+                    basedefenseFixer,
+                ],
                 awards: ["ironhide"]
             },
             { 
@@ -614,37 +678,79 @@
                 image: "images/level3_boss.png", 
                 image_attack: "images/level3_boss.png", 
                 hp: 120, 
+                damage: 100,
+                crit_rate: 0,
+                crit_multiplier: 1,
                 bg: "images/bg3.webp", 
                 attack_sound: "sounds/stick-attack.mp3",
-                hurt_sound: "sounds/hurt.mp3"
+                hurt_sound: "sounds/hurt.mp3",
+                damageFixers: [
+                    baseDamageFixer,
+                ],
+                defenseFixers: [
+                    basedefenseFixer,
+                ],
+                awards: []
             },
             { 
                 name: "百眼魔君", 
                 image: "images/level4_boss.png", 
                 image_attack: "images/level4_boss.png", 
                 hp: 180, 
+                damage: 110,
+                crit_rate: 0,
+                crit_multiplier: 1,
                 bg: "images/bg4.webp", 
                 attack_sound: "sounds/magic-attack.mp3",
-                hurt_sound: "sounds/hurt.mp3"
+                hurt_sound: "sounds/hurt.mp3",
+                damageFixers: [
+                    baseDamageFixer,
+                ],
+                defenseFixers: [
+                    basedefenseFixer,
+                ],
             },
             { 
                 name: "夜叉王", 
                 image: "images/level5_boss.png", 
                 image_attack: "images/level5_boss_attack.png", 
                 hp: 220, 
+                damage: 120,
+                crit_rate: 0,
+                crit_multiplier: 1,
                 bg: "images/bg5.webp", 
                 attack_sound: "sounds/sword-attack2.mp3",
-                hurt_sound: "sounds/hurt.mp3"
+                hurt_sound: "sounds/hurt.mp3",
+                damageFixers: [
+                    baseDamageFixer,
+                ],
+                defenseFixers: [
+                    basedefenseFixer,
+                ],
             },
             { 
                 name: "大圣残躯", 
                 image: "images/level6_boss.png", 
                 image_attack: "images/level6_boss.png", 
                 hp: 300, 
+                damage: 150,
+                crit_rate: 0,
+                crit_multiplier: 1,
                 bg: "images/bg6.webp", 
                 attack_sound: "sounds/stick-attack.mp3",
                 hurt_sound: "sounds/hurt.mp3",
-                awards: ["life_saving_hair"]
+                awards: ["life_saving_hair"],
+                damageFixers: [
+                    baseDamageFixer,
+                ],
+                defenseFixers: [
+                    () => {
+                        return {
+                            crit_immunity: true,
+                            damage_reduction: 0,
+                        };
+                    },
+                ],
             },
         ];
 
@@ -897,6 +1003,12 @@
                     player[event] = skill[event];
                 });
             }
+            if (skill.damageFixer) {
+                player.damageFixers.push(skill.damageFixer);
+            }
+            if (skill.defenseFixer) {
+                player.defenseFixers.push(skill.defenseFixer);
+            }
             showSkillUnlock(skill);
         }
 
@@ -957,20 +1069,56 @@
             }, 1000);
         }
 
+        function calAttackVal(baseVal, attacker, defender){
+            let attackVal = baseVal;
+            let attackAttr = baseDamageFixer(attacker);
+            if (attacker.damageFixers.length > 0){
+                attacker.damageFixers.forEach((fixer, index) => {
+                    attackAttr = fixer(attacker, attackAttr);
+                });
+            }
+            let defenderAttr = basedefenseFixer(defender);
+            if (defender.defenseFixers.length > 0){
+                defender.defenseFixers.forEach((fixer, index) => {
+                    defenderAttr = fixer(defender, defenderAttr);
+                });
+            }
+            
+            attackVal = baseVal * (1 + attackAttr.damage)/100;
+            if (attackAttr.crit_rate > 0 && !defender.crit_immunity){
+                let ri = Math.floor(Math.random()*100);
+                if (ri < attackAttr.crit_rate){
+                    attackVal *= (1 + (attackAttr.crit_multiplier/100));
+                    attackVal = Math.round(attackVal);
+                    effectToast("暴击！", true);
+                }
+            }
+
+            attackVal -= attackVal * (defenderAttr.damage_reduction/100);
+            attackVal = Math.max(Math.round(attackVal), 1);
+
+            return attackVal;
+        }
+
         function submitAnswer(answer) {
             totalAttempts++; // 总答题数 +1
             if (!answer) {
                 document.getElementById("input-answer").disabled = true;
                 answer = document.getElementById("answer-input").value.trim(); // 获取用户输入
             }
-            attackVal = (currentQuestion.difficulty+1) * 5
+            bossIndex = level - 1;
+            const boss = bosses[bossIndex];
             if (answer.toLowerCase() === currentQuestion.answer.toLowerCase()) {
                 correctCount++; // 正确数 +1
+                attackVal = calAttackVal((currentQuestion.difficulty+1) * 5, player, boss)
                 bossHP -= attackVal;
+                bossHP = Math.max(bossHP, 0);
                 showAttackEffect(true);
             } else {
                 currentLevelWrongCount++;
+                attackVal = calAttackVal((currentQuestion.difficulty+1) * 5, boss, player)
                 playerHP -= attackVal;
+                playerHP = Math.max(playerHP, 0);
                 showAttackEffect(false);
                 // 记录错误题目及知识点
                 wrongQuestions.push({

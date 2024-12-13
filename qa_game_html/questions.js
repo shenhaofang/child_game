@@ -224,7 +224,7 @@ const poetrys = [
     {
         title: "芙蓉楼送辛渐",
         dynasty: "唐",
-        dynasty: "王昌龄",
+        author: "王昌龄",
         difficulty: 2,
         content: ["寒雨连江夜入吴", "平明送客楚山孤", "洛阳亲友如相问", "一片冰心在玉壶"]
     },
@@ -972,11 +972,11 @@ function poetryQuestionMaker4(poetry, options = []){
 }
 
 function autoPoetryQuestions(difficulty = 1, num = 10){
-    difficultyPoetrys = [];
-    allTitles = [];
-    existTitles = {};
-    allAuthors = [];
-    existAuthors = {};
+    let difficultyPoetrys = [];
+    let allTitles = [];
+    let existTitles = {};
+    let allAuthors = [];
+    let existAuthors = {};
     for (let i = 0; i < poetrys.length; i++) {
         if (!existTitles[poetrys[i].title]){
             allTitles.push(poetrys[i].title)
