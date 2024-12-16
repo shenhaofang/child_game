@@ -65,7 +65,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         /* 血条样式 */
@@ -453,6 +453,37 @@
                 transform: scale(1);
             }
         }
+
+        #back-to-levels {
+            position: fixed;
+            top: 10px; /* 距离顶部 10px */
+            right: 10px; /* 距离右侧 10px */
+            width: 40px; /* 按钮宽度 */
+            height: 40px; /* 按钮高度 */
+            background-color: rgba(255, 255, 255, 0.7); /* 半透明背景 */
+            border: none; /* 去掉边框 */
+            border-radius: 50%; /* 圆形按钮 */
+            display: flex; /* 居中对齐图标 */
+            justify-content: center;
+            align-items: center;
+            cursor: pointer; /* 鼠标样式 */
+            z-index: 100; /* 确保按钮在最上层 */
+            transition: background-color 0.3s ease; /* 背景过渡效果 */
+        }
+
+        #back-to-levels:hover {
+            background-color: #45a049; /* 鼠标悬停时的背景颜色 */
+        }
+
+        #back-to-levels i {
+            color: white; /* 图标颜色 */
+            font-size: 20px; /* 图标大小 */
+        }
+
+        #back-to-levels img {
+            width: 30px; /* 图片宽度 */
+            height: 30px; /* 图片高度 */
+        }
     </style>
     <script src="questions.js"></script>
 </head>
@@ -476,6 +507,7 @@
         </div>
     </div>
     <div id="game-container" style="display: none;">
+        <button id="back-to-levels" onclick="renderLevelSelect()"><img src="images/back.png" alt="返回" width="20" height="20"></button>
         <!-- 血条 -->
         <div class="health-bar-container">
             <div class="health-bar" id="player-bar-container">
@@ -545,6 +577,7 @@
         function basedefenseFixer (defender) {
             return {
                 crit_immunity: false,
+                dodge: 0,
                 damage_reduction: 0,
             };
         }
@@ -569,6 +602,13 @@
                 basedefenseFixer,
             ],
             skills: {},
+            history: {
+                winCount: 0, // 总通关次数
+                totalAttempts: 0, // 历史累计答题次数
+                correctCount: 0,  // 历史累计答对次数
+                bossesDefeated: 0, // 历史击败的Boss数量
+                maxLevel: 1, // 历史最高关卡
+            }
         }
         let skills = {
             "life_saving_hair": {
@@ -608,6 +648,17 @@
                     if (player.skills["ironhide"].value <= 0) {
                         renderSkills(false);
                     }
+                },
+                defenseFixer: (defender, defenseAttr) => {
+                    // let ri = Math.floor(Math.random()*100);
+                    // if (ri < 20){
+                    //     return defenseAttr;
+                    // }
+                    return {
+                        crit_immunity: false,
+                        dodge: 0,
+                        damage_reduction: 10,
+                    };
                 }
             },
             "crit": {
@@ -619,18 +670,15 @@
                 damageFixer: (attacker, damageAttr) => {
                     return {
                         damage: damageAttr.damage,
-                        crit_rate: 100,
+                        crit_rate: 30,
                         crit_multiplier: damageAttr.crit_multiplier+100,
                     };
                 },
                 defenseFixer: (defender, defenseAttr) => {
-                    let ri = Math.floor(Math.random()*100);
-                    if (ri < 20){
-                        return defenseAttr;
-                    }
                     return {
                         crit_immunity: false,
-                        damage_reduction: 100,
+                        dodge: 30,
+                        damage_reduction: 0,
                     };
                 },
             }
@@ -747,6 +795,7 @@
                     () => {
                         return {
                             crit_immunity: true,
+                            dodge: 10,
                             damage_reduction: 0,
                         };
                     },
@@ -781,11 +830,17 @@
             document.getElementById("game-container").style.display = "none";
             
             const levelButtons = document.getElementById("level-buttons");
-            levelButtons.innerHTML = bosses.map((boss, index) => `
-                <button onclick="resetGame(${index + 1})" style="padding: 50px 20px; font-size: 18px;background-image: url('${boss.bg}');">
+            levelButtons.innerHTML = bosses.map((boss, index) => {
+                levelBtn = `<button onclick="resetGame(${index + 1})" style="padding: 50px 20px; font-size: 18px;background-image: url('${boss.bg}');">
                     关卡 ${index + 1}: ${boss.name}
-                </button>
-            `).join("");
+                </button>`
+                if (index + 1 > player.history.maxLevel) {
+                    levelBtn = `<button style="box-shadow: none; filter: grayscale(100%) brightness(50%); opacity: 0.7; padding: 50px 20px; font-size: 18px;background-image: url('${boss.bg}');">
+                    关卡 ${index + 1}: ${boss.name}
+                </button>`
+                }
+                return levelBtn;
+            }).join("");
         }
 
         function calPlayerHP(level) {
@@ -1015,8 +1070,9 @@
         function onBossDefeated(){
             bossIndex = level - 1;
             const boss = bosses[bossIndex];
+            player.history.bossesDefeated++;
             effectToast("获胜！", true);
-            if (boss && boss.awards.length > 0){
+            if (boss && boss.awards && boss.awards.length > 0){
                 boss.awards.map((award, index) => {
                     if (!skills[award]){
                         return
@@ -1035,6 +1091,9 @@
             if (bossHP <= 0) {
                 onBossDefeated();
                 level++;
+                if (player.history.maxLevel < level){
+                    player.history.maxLevel = level;
+                }
                 if (level <= bosses.length) {
                     showLevelUp();
                     player.hp = calPlayerHP(level);
@@ -1042,9 +1101,12 @@
                     updateBossInfo();
                     renderQuestion(); // 渲染下一题
                     currentLevelWrongCount = 0;
+                    saveGame();
                     return;
                 }
+                player.history.winCount++;
                 effectToast("恭喜你通关了！", true);
+                saveGame();
                 showSummary();
                 return;
             } else if (playerHP <= 0) {
@@ -1083,6 +1145,12 @@
                     defenderAttr = fixer(defender, defenderAttr);
                 });
             }
+
+            let ri = Math.floor(Math.random()*100);
+            if (ri < defender.dodge){
+                effectToast("闪避！", true);
+                return 0;
+            }
             
             attackVal = baseVal * (1 + attackAttr.damage)/100;
             if (attackAttr.crit_rate > 0 && !defender.crit_immunity){
@@ -1102,6 +1170,7 @@
 
         function submitAnswer(answer) {
             totalAttempts++; // 总答题数 +1
+            player.history.totalAttempts++;
             if (!answer) {
                 document.getElementById("input-answer").disabled = true;
                 answer = document.getElementById("answer-input").value.trim(); // 获取用户输入
@@ -1110,6 +1179,7 @@
             const boss = bosses[bossIndex];
             if (answer.toLowerCase() === currentQuestion.answer.toLowerCase()) {
                 correctCount++; // 正确数 +1
+                player.history.correctCount++;
                 attackVal = calAttackVal((currentQuestion.difficulty+1) * 5, player, boss)
                 bossHP -= attackVal;
                 bossHP = Math.max(bossHP, 0);
@@ -1206,6 +1276,7 @@
         }
 
         function resetGame(setLevel = 1) {
+            document.getElementById("summary-container").style.display = "none";
             // 重置关卡
             level = setLevel;
 
@@ -1231,14 +1302,50 @@
             renderQuestion();
         }
 
+        function saveGame() {
+            const saveData = {
+                level: level, // 当前关卡
+                player: player,
+            };
+
+            // 将数据保存到 LocalStorage
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
+            console.log("游戏进度已保存");
+        }
+
+        function loadGame() {
+            const saveData = localStorage.getItem("gameSave");
+
+            if (saveData) {
+                const gameState = JSON.parse(saveData);
+
+                // 恢复关卡和玩家状态
+                level = gameState.level || 1;
+                player = gameState.player || player;
+
+                console.log("存档已加载:", gameState);
+
+                // 恢复到对应关卡
+                resetGame(level);
+            } else {
+                console.log("没有找到存档");
+                resetGame(1);
+                // 初始化游戏时显示关卡选择
+                // renderLevelSelect();
+            }
+        }
+
+        function clearGameSave() {
+            localStorage.removeItem("gameSave");
+            console.log("存档已清除");
+        }
+
         // 按钮事件绑定
         document.getElementById("return-button").addEventListener("click", renderLevelSelect);
 
-        // 初始化
-        resetGame(1);
-
-        // 初始化游戏时显示关卡选择
-        renderLevelSelect();
+        window.onload = function () {
+            loadGame();
+        };
     </script>
 </body>
 </html>
