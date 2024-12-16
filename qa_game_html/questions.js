@@ -23,8 +23,10 @@ function randomInt(difficulty = 1){
 
 function autoMathQuestions(difficulty = 1, num = 10){
     autoMathAddOrSub(difficulty, num)
+    autoMathAddOrSubUnkonw(difficulty, num)
     if (difficulty > 2) {
         autoMathMultiDiv(difficulty, num)
+        autoMathMultiDivUnkonw(difficulty, num)
     }
 }
 
@@ -45,6 +47,33 @@ function autoMathAddOrSub(difficulty = 1, num = 10) {
         }else{
             questions.push({
                 question: `${c} - ${a} = ?`,
+                img: "",
+                options: [],
+                knowledge: "减法",
+                answer: b.toString(),
+                difficulty: difficulty
+            })
+        }
+    }
+}
+
+function autoMathAddOrSubUnkonw(difficulty = 1, num = 10) {
+    for (let i = 0; i < num; i++) {
+        let a = randomInt(difficulty);
+        let b = randomInt(difficulty);
+        let c = a + b;
+        if (i%2 == 0){
+            questions.push({
+                question: `? - ${a} = ${b}`,
+                img: "",
+                options: [],
+                knowledge: "加法",
+                answer: c.toString(),
+                difficulty: difficulty
+            })
+        }else{
+            questions.push({
+                question: `${a} + ? = ${c}`,
                 img: "",
                 options: [],
                 knowledge: "减法",
@@ -77,6 +106,38 @@ function autoMathMultiDiv(difficulty = 1, num = 10){
         }else{
             questions.push({
                 question: `${c} ÷ ${a} = ?`,
+                img: "",
+                options: [],
+                knowledge: "除法",
+                answer: b.toString(),
+                difficulty: difficulty
+            })
+        }
+    }
+}
+
+function autoMathMultiDivUnkonw(difficulty = 1, num = 10){
+    // let digit = difficulty
+    // if (digit > 2){
+    //     digit -= 2
+    // }
+    for (let i = 0; i < num; i++) {
+        let a = randomInt(Math.floor(difficulty/2)) + 1;
+        let b = randomInt(Math.floor(difficulty/2)) + 1;
+        
+        c = a * b;
+        if (i%2 == 0 || (a == 0 && b == 0)){
+            questions.push({
+                question: `? ÷ ${a} = ${b}`,
+                img: "",
+                options: [],
+                knowledge: "乘法",
+                answer: c.toString(),
+                difficulty: difficulty
+            })
+        }else{
+            questions.push({
+                question: `${a} × ? = ${c}`,
                 img: "",
                 options: [],
                 knowledge: "除法",

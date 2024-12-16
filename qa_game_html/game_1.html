@@ -1044,7 +1044,7 @@
             };
         }
 
-        function addSkill(skillID) {
+        function addSkill(skillID, showSkillUnlock = true) {
             if (!skills[skillID]){
                 return
             }
@@ -1064,7 +1064,9 @@
             if (skill.defenseFixer) {
                 player.defenseFixers.push(skill.defenseFixer);
             }
-            showSkillUnlock(skill);
+            if (showSkillUnlock) {
+                showSkillUnlock(skill);
+            }
         }
 
         function onBossDefeated(){
@@ -1321,7 +1323,16 @@
 
                 // 恢复关卡和玩家状态
                 level = gameState.level || 1;
-                player = gameState.player || player;
+                // player = gameState.player || player;
+                player.hp = gameState.player.hp;
+                player.damage = gameState.player.damage;
+                player.crit_rate = gameState.player.crit_rate
+                player.crit_multiplier = gameState.player.crit_multiplier
+                player.history = gameState.player.history;
+
+                for (skillID in gameState.player.skills) {
+                    addSkill(skillID, false)
+                }
 
                 console.log("存档已加载:", gameState);
 
