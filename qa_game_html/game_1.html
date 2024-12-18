@@ -236,6 +236,11 @@
             background-size: cover;
         }
 
+        .disable {
+            filter: grayscale(100%) brightness(50%);
+            opacity: 0.7;
+        }
+
         #passive-skill-container {
             display: flex;
             width: 100%;
@@ -618,6 +623,7 @@
                 passive: true,
                 on_dead: () => {
                     if (player.skills["life_saving_hair"] && player.skills["life_saving_hair"].value <= 0) {
+                        renderSkills(false);
                         return true;
                     }
                     player.skills["life_saving_hair"].value--;
@@ -638,6 +644,8 @@
                 value: 3,
                 do: async () =>{
                     if (player.skills["ironhide"] && player.skills["ironhide"].value <= 0) {
+                        effectToast("法力还未恢复", false);
+                        renderSkills(false);
                         return;
                     }
                     player.skills["ironhide"].value--;
@@ -1265,12 +1273,17 @@
                     player.skills[skillID].value = skill.value;
                 }
                 if (player.skills[skillID].value <= 0){
-                    return
-                }
-                if (skill.passive){
-                    passiveSkillHtml += `<div class="passive-skill-button" style="background-image: url('${skill.icon}');"></div>`
+                    if (skill.passive){
+                        passiveSkillHtml += `<div class="passive-skill-button disable" style="background-image: url('${skill.icon}');"></div>`
+                    }else{
+                        activeSkillHtml += `<div onclick="sillDo('${skillID}')" class="active-skill-button disable" style="background-image: url('${skill.icon}');"></div>`
+                    }
                 }else{
-                    activeSkillHtml += `<div onclick="sillDo('${skillID}')" class="active-skill-button" style="background-image: url('${skill.icon}');"></div>`
+                    if (skill.passive){
+                        passiveSkillHtml += `<div class="passive-skill-button" style="background-image: url('${skill.icon}');"></div>`
+                    }else{
+                        activeSkillHtml += `<div onclick="sillDo('${skillID}')" class="active-skill-button" style="background-image: url('${skill.icon}');"></div>`
+                    }
                 }
             }
             activeSkillContainer.innerHTML = activeSkillHtml;
