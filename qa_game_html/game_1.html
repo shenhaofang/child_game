@@ -1044,7 +1044,7 @@
             };
         }
 
-        function addSkill(skillID, showSkillUnlock = true) {
+        function addSkill(skillID, showUnlock = true) {
             if (!skills[skillID]){
                 return
             }
@@ -1064,7 +1064,7 @@
             if (skill.defenseFixer) {
                 player.defenseFixers.push(skill.defenseFixer);
             }
-            if (showSkillUnlock) {
+            if (showUnlock) {
                 showSkillUnlock(skill);
             }
         }
