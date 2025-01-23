@@ -627,10 +627,11 @@
                         return true;
                     }
                     player.skills["life_saving_hair"].value--;
-                    player.hp = calPlayerHP(level);
+                    playerHP = calPlayerHP(level);
                     if (player.skills["life_saving_hair"].value <= 0) {
                         renderSkills(false);
                     }
+                    updateHealthBars();
                     return false;
                 },
                 event_listener: ["on_dead"],
@@ -1075,6 +1076,7 @@
             if (showUnlock) {
                 showSkillUnlock(skill);
             }
+            renderSkills(true);
         }
 
         function onBossDefeated(){
